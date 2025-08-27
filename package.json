@@ -1,0 +1,28 @@
+{
+	"type": "module",
+	"dependencies": {
+		"fastify": "^5.5.0",
+		"@types/node": "^24.0.3"
+	},
+	"scripts": {
+		"dev": "ts-node src/server.ts",
+		"build": "tsc",
+		"start": "node src/server.js"
+	},
+	"name": "xdbackend",
+	"version": "1.0.0",
+	"description": "Backend project for ilmo 1.0",
+	"main": "src/app.js",
+	"devDependencies": {},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/MijMa/xdbackend.git"
+	},
+	"keywords": [],
+	"author": "Mio Mattila",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/MijMa/xdbackend/issues"
+	},
+	"homepage": "https://github.com/MijMa/xdbackend#readme"
+}
