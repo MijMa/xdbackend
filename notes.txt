@@ -1,0 +1,7 @@
+Jos haluat sujuvampaa devaamista muutoksien yhteydessä,
+voit asentaa ts-node ja nodemon. ts-node kääntää ja runaa yhdellä kertaa
+ja nodemon restarttaa koko serverin stateineen päivineen mikäli koodi muuttuu
+
+
+Dates to strings conversion from frontend all the way to database,
+need to figure this one out

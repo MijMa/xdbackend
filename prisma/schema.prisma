@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+	id Int @id @default(autoincrement())
+	name String
+	email String @unique
+}
+
+model Event {
+	id Int @id @default(autoincrement())
+	name String
+	owner String
+	description String
+	place String
+	startDate String
+	endDate String
+	minParticipants Int
+	maxParticipants Int
+	signupStarts String
+	signupEnds String
+	price Int
+	metadata String
+	createdAt String
+	updatedAt String
+	forms Form[]
+	@@map("events") // maps model to 'events' table in DB
+}
+
+model Form {
+	id Int @id @default(autoincrement())
+	eventId Int @id @default(autoincrement())
+	fields Field[]
+	participants Participant[]
+	@@map("forms") // maps model to 'forms' table in DB
+}
+
+model Participant {
+	id Int @id @default(autoincrement())
+	formId Int @id @default(autoincrement())
+	name String
+	email String @unique
+	answers Answer[]
+	@@map("participants") // maps model to 'participants' table in DB
+}

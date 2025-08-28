@@ -1,19 +1,23 @@
 {
 	"type": "module",
 	"dependencies": {
-		"fastify": "^5.5.0",
-		"@types/node": "^24.0.3"
+		"@prisma/client": "6.15.0",
+		"@types/node": "^24.0.3",
+		"fastify": "^5.5.0"
 	},
 	"scripts": {
-		"dev": "ts-node src/server.ts",
+		"dev": "node dist/server.js",
 		"build": "tsc",
-		"start": "node src/server.js"
+		"start": ""
 	},
 	"name": "xdbackend",
 	"version": "1.0.0",
 	"description": "Backend project for ilmo 1.0",
 	"main": "src/app.js",
-	"devDependencies": {},
+	"devDependencies": {
+		"prisma": "^6.15.0",
+		"typescript": "^5.9.2"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/MijMa/xdbackend.git"
