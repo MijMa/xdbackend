@@ -5,3 +5,5 @@ ja nodemon restarttaa koko serverin stateineen päivineen mikäli koodi muuttuu
 
 Dates to strings conversion from frontend all the way to database,
 need to figure this one out
+
+Tsekkaa myös jos voisit käyttää LF CRLF sijaan, vaikuttaa yleiseltä konventiolta

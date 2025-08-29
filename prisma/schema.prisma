@@ -19,6 +19,8 @@ model User {
 	email String @unique
 }
 
+//Prisma naming convention is singular names with uppercase
+//There's no such strong convention for database table names, so plural lovercase
 model Event {
 	id Int @id @default(autoincrement())
 	name String
@@ -36,22 +38,27 @@ model Event {
 	createdAt String
 	updatedAt String
 	forms Form[]
+
 	@@map("events") // maps model to 'events' table in DB
 }
 
 model Form {
 	id Int @id @default(autoincrement())
-	eventId Int @id @default(autoincrement())
-	fields Field[]
+	fields Json
+	eventId Int
+	event Event @relation(fields: [eventId], references: [id])
 	participants Participant[]
+
 	@@map("forms") // maps model to 'forms' table in DB
 }
 
 model Participant {
 	id Int @id @default(autoincrement())
-	formId Int @id @default(autoincrement())
 	name String
 	email String @unique
-	answers Answer[]
+	answers Json
+	formId Int
+	form Form @relation(fields: [formId], references: [id])
+
 	@@map("participants") // maps model to 'participants' table in DB
 }
