@@ -45,28 +45,44 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+
   //Creates a event
   fastify.post("/create", async (request, reply) => {
-    const BodySchema = z.object({
+
+    const CreateBodySchema = z.object({
       event: EventSchema,
-      form: FormSchema,
     });
 
-    const parseResult = BodySchema.safeParse(request.body);
+    //Validation
+    const parseResult = CreateBodySchema.safeParse(request.body);
 
     if (!parseResult.success) {
       return reply.status(400).send({ error: parseResult.error.format() });
     }
 
-    const { event, form } = parseResult.data;
+    const event: EventTypes = parseResult.data.event;
+    //prisma nonsense
+    //const reducedForms = event.forms.map(({ participants, ...rest }) => rest);
 
+
+
+    const cd = event.forms;
+    const cf = cd[0].participants;
+
+    //Note that prisma also offers other commands like createmany
     const newEvent = await prisma.event.create({
       data: {
         ...event,
-        form: {
-          create: form,
-        }
+        forms: {
+          //Prisma complexity circumventer
+          //strips out the participants field
+          // create: reducedForms,
+          create: event.forms.map(({ participants, ...form }) => form)
+        },
       },
+      include: {
+        forms: true,
+      }
     });
 
     reply.status(201).send(newEvent);

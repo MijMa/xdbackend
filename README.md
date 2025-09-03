@@ -4,6 +4,9 @@ Backend project for ilmo 1.0
 To run install prisma migrations
 npx prisma migrate dev --name init
 
+Rememba' to also install types:
+npm i --save-dev @types/node
+
 npx prisma init
 
 DB: initial run
