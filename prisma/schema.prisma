@@ -10,22 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+	id Int @id @default(autoincrement())
+	name String
+	email String @unique
+}
+
 //Prisma naming convention is singular names with uppercase
 //There's no such strong convention for database table names, so plural lovercase
 model Event {
-	id Int @id @default(autoincrement())
+	id String @id @default(uuid())
 	name String
 	owner String
-	description String
-	place String
+	description String?
+	place String?
 	startDate String
 	endDate String
-	minParticipants Int
-	maxParticipants Int
-	signupStarts String
-	signupEnds String
-	price Int
-	metadata String
+	minParticipants Int?
+	maxParticipants Int?
+	signupStarts String?
+	signupEnds String?
+	price Int?
+	metadata String?
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 	forms Form[]
@@ -34,9 +40,9 @@ model Event {
 }
 
 model Form {
-	id Int @id @default(autoincrement())
+	id String @id @default(uuid())
 	fields Json
-	eventId Int
+	eventId String
 	event Event @relation(fields: [eventId], references: [id])
 	participants Participant[]
 
@@ -44,11 +50,11 @@ model Form {
 }
 
 model Participant {
-	id Int @id @default(autoincrement())
+	id String @id @default(uuid())
 	name String
 	userEmail String @unique
 	answers Json
-	formId Int
+	formId String
 	form Form @relation(fields: [formId], references: [id])
 
 	@@map("participants") // maps model to 'participants' table in DB

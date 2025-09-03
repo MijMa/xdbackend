@@ -1,10 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { EventSchema, FormSchema, ParticipantSchema } from "../validation/events.schema.ts"
-import { EventTypes, FormTypes, ParticipantTypes } from "../validation/events.schema.ts"
+import { EventSchema, FormSchema, ParticipantSchema } from "../validation/validators.schema.ts"
+import { EventTypes, FormTypes, ParticipantTypes } from "../validation/validators.schema.ts"
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
 import { PrismaClient } from '@prisma/client';
+import { z } from "zod";
+import { create } from "node:domain";
 
 const prisma = new PrismaClient();
 
@@ -12,6 +14,14 @@ interface formParams {
   formId: string;
   fields: object;
 }
+
+//Apufunktio, ei käytössä
+export const omitUndefined = <T extends Record<string, any>>(obj: T): Partial<T> => {
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined)
+  ) as Partial<T>;
+};
+
+
 
 
 export const eventRoutes = async (fastify: FastifyInstance) => {
@@ -35,39 +45,33 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
-  fastify.post("/event", async (request, reply) => {
-    const parseResult = EventSchema.safeParse(request.body);
+  //Creates a event
+  fastify.post("/create", async (request, reply) => {
+    const BodySchema = z.object({
+      event: EventSchema,
+      form: FormSchema,
+    });
+
+    const parseResult = BodySchema.safeParse(request.body);
 
     if (!parseResult.success) {
       return reply.status(400).send({ error: parseResult.error.format() });
     }
 
-    const eventData: EventTypes = parseResult.data;
+    const { event, form } = parseResult.data;
 
     const newEvent = await prisma.event.create({
-      data: eventData,
+      data: {
+        ...event,
+        form: {
+          create: form,
+        }
+      },
     });
 
     reply.status(201).send(newEvent);
   });
 
-
-  fastify.post('/create', async (req, reply) => {
-    const { event } = req.body as { event: any };
-
-    try {
-      const saved = await prisma.event.create({
-        data: {
-          ...event,
-        }
-      });
-
-      return saved;
-    } catch (err) {
-      fastify.log.error(err);
-      reply.status(500).send({ error: "Failed to create event" });
-    }
-  });
 
   //Get event lists
   fastify.get('/events', async (req, reply) => {
@@ -80,6 +84,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  //Get all events by user
   fastify.get('/users-events', async (req, reply) => {
 
     try {
@@ -107,10 +112,20 @@ export const formRoutes = async (fastify: FastifyInstance) => {
   fastify.post('/create', async (req, reply) => {
     const { form } = req.body as { form: any };
 
+    const parseResult = FormSchema.safeParse(req.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ 
+        error: "Invalid participant data", 
+        details: parseResult.error 
+      });
+    }
+    const formData: FormTypes = parseResult.data;
+    console.log(formData);
+
     try {
       const saved = await prisma.form.create({
         data: {
-          ...form,
+          ...formData,
         }
       });
 
@@ -123,7 +138,7 @@ export const formRoutes = async (fastify: FastifyInstance) => {
 
   //Update path
   fastify.patch('/forms/:id', async (request, reply) => {
-    const { id } = request.params as { id: number };
+    const { id } = request.params as { id: string };
     const formUpdates = request.body as formParams; // Replace `Form` with your actual type
 
     try {
@@ -141,7 +156,7 @@ export const formRoutes = async (fastify: FastifyInstance) => {
 
   //Get a singular form
   fastify.get('/:id', async (request, reply) => {
-    const { id } = request.params as { id: number };
+    const { id } = request.params as { id: string };
 
     try {
       const form = await prisma.form.findUnique({
@@ -171,21 +186,23 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
   // });
 
   fastify.post('/:id/signup', async (request, reply) => {
-    const { id } = request.params as { id: number };
+    const { id } = request.params as { id: string };
 
     const parseResult = ParticipantSchema.safeParse(request.body);
     if (!parseResult.success) {
-      return reply.status(400).send({ error: "Invalid participant data", details: parseResult.error.errors });
+      return reply.status(400).send({ 
+        error: "Invalid participant data", 
+        details: parseResult.error 
+      });
     }
 
-    const participantData = parseResult.data;
+    const participantData: ParticipantTypes = parseResult.data;
 
     try {
       const newParticipant = await prisma.participant.create({
         data: {
           ...participantData,
           formId: id, // assuming `formId` is the foreign key in your DB
-          answers: participantData.answers, // Typescript says gtfo w this zod shit
         },
       });
 

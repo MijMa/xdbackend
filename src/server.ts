@@ -1,7 +1,7 @@
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { eventRoutes } from "./routes/routes.js"
+import { eventRoutes, formRoutes, participantRoutes } from "./routes/routes.js"
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,9 @@ const fastify: FastifyInstance = Fastify({
 fastify.decorate('prisma', prisma); // or use fastify-plugin
 
 // Register your routes
-fastify.register(eventRoutes, { prefix: '/events' });
+fastify.register(eventRoutes, { prefix: '/event' });
+fastify.register(formRoutes, { prefix: '/form' });
+fastify.register(participantRoutes, { prefix: '/participant' });
 
 
 fastify.get('/users', async (request, reply) => {
