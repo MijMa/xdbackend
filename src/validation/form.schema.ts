@@ -1,0 +1,28 @@
+import { z } from "zod";
+import { ParticipantBase } from "./participant.schema.ts";
+
+export const FormBase = z.object({
+  eventId: z.string().uuid(),
+  fields: z.array(
+    z.object({
+      order: z.number(),
+      label: z.string(),
+      type: z.string(),
+      value: z.union([
+        z.string(),
+        z.array(z.string()),
+      ])
+    })
+  ),
+  participants: z.array(z.lazy(() => ParticipantBase)),
+}).strict();
+export type FormBaseTypes = z.infer<typeof FormBase>;
+
+export const FormCreate = FormBase.pick({
+  eventId: true,
+  fields: true,
+});
+export type FormCreateTypes = z.infer<typeof FormCreate>;
+
+export const FormUpdate = FormBase.partial();
+export const FormResponse = FormBase.extend({ id: z.string().uuid(), createdAt: z.date() });
