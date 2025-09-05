@@ -1,7 +1,7 @@
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { eventRoutes, formRoutes, participantRoutes } from "./routes/routes.js"
+import { eventRoutes, formRoutes, participantRoutes } from "./routes/routes.ts"
 
 const prisma = new PrismaClient();
 
