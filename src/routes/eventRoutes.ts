@@ -147,6 +147,18 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/users-events', async (req, reply) => {
 
     try {
+      const newEvents = await prisma.event.findMany({
+        //where owner = "signedinuser"
+        //where: { owner: userName },
+        include: {
+            forms: {
+                include: {
+                    participants: true
+                }
+            }
+        },
+        orderBy: { startDate: "desc" },
+      });
 
     } catch (err) {
       fastify.log.error(err);
