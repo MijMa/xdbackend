@@ -24,5 +24,7 @@ export const FormCreate = FormBase.pick({
 });
 export type FormCreateTypes = z.infer<typeof FormCreate>;
 
-export const FormUpdate = FormBase.partial();
+export const FormUpdate = FormCreate.partial();
+export type FormUpdateTypes = z.infer<typeof FormUpdate>;
+
 export const FormResponse = FormBase.extend({ id: z.string().uuid(), createdAt: z.date() });

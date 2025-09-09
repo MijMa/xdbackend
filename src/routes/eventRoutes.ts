@@ -147,6 +147,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
   fastify.get('/users-events', async (req, reply) => {
 
     try {
+      //Prisma findMany returns all instances when 'where' is not provided
       const newEvents = await prisma.event.findMany({
         //where owner = "signedinuser"
         //where: { owner: userName },
