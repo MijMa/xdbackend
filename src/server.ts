@@ -1,7 +1,8 @@
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { eventRoutes, formRoutes, participantRoutes } from "./routes/routes.ts"
+import { eventRoutes, formRoutes, participantRoutes } from "./routes/routes.js"
+import fastifyCors from '@fastify/cors';
 
 const prisma = new PrismaClient();
 
@@ -10,13 +11,15 @@ const fastify: FastifyInstance = Fastify({
 })
 
 // Register Prisma if you're using it as a plugin
-fastify.decorate('prisma', prisma); // or use fastify-plugin
+fastify.decorate('prisma', prisma); //or use fastify-plugin
 
-// Register your routes
+// Registering routes
 fastify.register(eventRoutes, { prefix: '/event' });
 fastify.register(formRoutes, { prefix: '/form' });
 fastify.register(participantRoutes, { prefix: '/participant' });
-
+// await fastify.register(fastifyCors), {
+//   origin: true, // or your allowed origin(s)
+// };
 
 fastify.get('/users', async (request, reply) => {
   const users = await prisma.user.findMany();
@@ -28,5 +31,8 @@ await fastify.listen({ port: 3000 }, (err, address) => {
     fastify.log.error(err);
     process.exit(1);
   }
+  console.log("Stuff successfully reset");
+  console.log(fastify.printRoutes()); 
+
   console.log("Server running on http://localhost:3000");
 });

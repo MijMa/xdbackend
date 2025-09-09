@@ -1,6 +1,8 @@
 # xdbackend
 Backend project for ilmo 1.0
 
+once the project is setup, running: pnpm build && pnpm dev will be a great shortcut
+
 To run install prisma migrations
 npx prisma migrate dev --name init
 

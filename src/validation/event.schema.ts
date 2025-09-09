@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { ParticipantBase } from "./participant.schema.ts";
-import { FormBase } from "./form.schema.ts";
+import { ParticipantBase } from "./participant.schema.js";
+import { FormBase } from "./form.schema.js";
 
 export const EventBase = z.object({
   name: z.string().min(1),

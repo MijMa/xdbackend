@@ -1,5 +1,5 @@
 
 //Barrel export file
-export * from "./eventRoutes.ts";
-export * from "./formRoutes.ts";
-export * from "./participantRoutes.ts";
+export * from "./eventRoutes.js";
+export * from "./formRoutes.js";
+export * from "./participantRoutes.js";

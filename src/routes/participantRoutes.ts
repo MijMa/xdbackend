@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { ParticipantBase, ParticipantTypes, ParticipantCreate, ParticipantCreateTypes } from "../validation/participant.schema.ts";
+import { ParticipantBase, ParticipantTypes, ParticipantCreate, ParticipantCreateTypes } from "../validation/participant.schema.js";
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it

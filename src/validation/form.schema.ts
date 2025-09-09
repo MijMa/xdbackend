@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ParticipantBase } from "./participant.schema.ts";
+import { ParticipantBase } from "./participant.schema.js";
 
 export const FormBase = z.object({
   eventId: z.string().uuid(),

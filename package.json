@@ -16,6 +16,7 @@
 	"description": "Backend project for ilmo 1.0",
 	"main": "src/app.js",
 	"devDependencies": {
+		"@fastify/cors": "^11.1.0",
 		"prisma": "6.15.0",
 		"typescript": "^5.9.2"
 	},
