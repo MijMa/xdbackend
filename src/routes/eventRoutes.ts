@@ -12,11 +12,16 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
   //Creates a event
   fastify.post("/create", async (request, reply) => {
-    console.log("Request received");
+    console.log("Stuff sent into /create:", request.body);
+    console.log("Other stuff:", request.body.event.forms);
     //Validation
-    const parseResult = EventCreate.safeParse(request.body);
+    //Failure point, received object has forms, EventCreate does not
+    //This needs thonks, Do I send a nested object, or do I Send them seperately
+    // I think we bucher this into shape and see how smart that will be
+    const parseResult = EventCreate.safeParse(request.body.event);
+    console.log(parseResult);
     if (!parseResult.success) {
-      return reply.status(400).send({ error: parseResult.error.format() });
+      return reply.status(400).send({ error: parseResult.error });
     }
     const event: EventCreateTypes = parseResult.data;
 

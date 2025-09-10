@@ -17,9 +17,9 @@ fastify.decorate('prisma', prisma); //or use fastify-plugin
 fastify.register(eventRoutes, { prefix: '/event' });
 fastify.register(formRoutes, { prefix: '/form' });
 fastify.register(participantRoutes, { prefix: '/participant' });
-// await fastify.register(fastifyCors), {
-//   origin: true, // or your allowed origin(s)
-// };
+await fastify.register(fastifyCors), {
+  origin: true, // or your allowed origin(s)
+};
 
 fastify.get('/users', async (request, reply) => {
   const users = await prisma.user.findMany();
