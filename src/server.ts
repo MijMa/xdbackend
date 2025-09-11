@@ -4,7 +4,9 @@ import { PrismaClient } from '@prisma/client';
 import { eventRoutes, formRoutes, participantRoutes } from "./routes/routes.js"
 import fastifyCors from '@fastify/cors';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  errorFormat: "minimal"
+});
 
 const fastify: FastifyInstance = Fastify({
   logger: true
@@ -31,8 +33,7 @@ await fastify.listen({ port: 3000 }, (err, address) => {
     fastify.log.error(err);
     process.exit(1);
   }
-  console.log("Stuff successfully reset");
-  console.log(fastify.printRoutes()); 
+  // console.log(fastify.printRoutes()); 
 
   console.log("Server running on http://localhost:3000");
 });

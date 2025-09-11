@@ -28,10 +28,10 @@ model Event {
 	endDate DateTime
 	minParticipants Int?
 	maxParticipants Int?
-	signupStarts String?
-	signupEnds String?
+	signupStarts DateTime?
+	signupEnds DateTime?
 	price Int?
-	metadata String?
+	metaData Json?
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 	forms Form[]

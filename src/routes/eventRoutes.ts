@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { EventBase, EventBaseTypes, EventCreate, EventCreateTypes, EventUpdate, EventUpdateTypes } from "../validation/event.schema.js";
+import { FormBase, FormBaseTypes, FormCreate, FormCreateTypes } from "../validation/form.schema.js";
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
@@ -8,38 +9,58 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 
+//Type definition for the body payload of create event(and form) route
+interface createTypes {
+  Body: {
+    event: EventBaseTypes,
+    form: FormBaseTypes
+  }
+}
+
 export const eventRoutes = async (fastify: FastifyInstance) => {
 
   //Creates a event
-  fastify.post("/create", async (request, reply) => {
-    console.log("Stuff sent into /create:", request.body);
-    console.log("Other stuff:", request.body.event.forms);
-    //Validation
-    //Failure point, received object has forms, EventCreate does not
-    //This needs thonks, Do I send a nested object, or do I Send them seperately
-    // I think we bucher this into shape and see how smart that will be
-    const parseResult = EventCreate.safeParse(request.body.event);
-    console.log(parseResult);
-    if (!parseResult.success) {
-      return reply.status(400).send({ error: parseResult.error });
+  fastify.post<createTypes>("/create", async (request, reply) => {
+
+    //Could also just use .strip() in the zod schema, to rid exess fields
+    const { id: eventId, createdAt, updatedAt, forms,
+      ...eventPayload } = request.body.event;
+    const { id: formId, eventId: eventIdRef, participants,
+      ...formPayload } = request.body.form;
+
+    const parseResult1 = EventCreate.safeParse(eventPayload);
+    const parseResult2 = FormCreate.safeParse(formPayload);
+    if (!parseResult1.success || !parseResult2.success) {
+      return reply.status(400).send({
+         error: !parseResult1.success ? parseResult1.error : parseResult2.error, 
+        });
     }
-    const event: EventCreateTypes = parseResult.data;
+    const event: EventCreateTypes = parseResult1.data;
+    const form: FormCreateTypes = parseResult2.data;
 
     try {
-      //Note that prisma also offers other commands like createmany
-      const newEvent = await prisma.event.create({
+      //Note that prisma also offers other commands like createMany
+      const newEventnForm = await prisma.event.create({
         data: {
           ...event,
+          forms: {
+            create: [
+              {
+                ...form
+              }
+            ]
+          }
         },
         include: {
           forms: true,
         }
       });
 
-      reply.status(201).send(newEvent);
+      reply.status(201).send(newEventnForm);
 
     } catch (err) {
-      request.log.error(err);
+      // request.log.error(err); forcing the error trough a string ruins formatting
+      console.error(err)
       return reply.status(500).send({ error: "Failed o create event" });
     }
   });

@@ -2,7 +2,8 @@ import { z } from "zod";
 import { ParticipantBase } from "./participant.schema.js";
 
 export const FormBase = z.object({
-  eventId: z.string().uuid(),
+  id: z.string(), //uuid?
+  eventId: z.string(), //uuid?
   fields: z.array(
     z.object({
       order: z.number(),
@@ -19,7 +20,7 @@ export const FormBase = z.object({
 export type FormBaseTypes = z.infer<typeof FormBase>;
 
 export const FormCreate = FormBase.pick({
-  eventId: true,
+  //eventId: true,
   fields: true,
 });
 export type FormCreateTypes = z.infer<typeof FormCreate>;

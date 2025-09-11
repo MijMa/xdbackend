@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const ParticipantBase = z.object({
-  formId: z.string().uuid(),
+  formId: z.string(), //uuid?
   name: z.string().min(1),
   userEmail: z.string().email(),
   answers: z.array(
