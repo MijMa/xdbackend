@@ -60,45 +60,45 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
     } catch (err) {
       // request.log.error(err); forcing the error trough a string ruins formatting
-      console.error(err)
+      console.error(err);
       return reply.status(500).send({ error: "Failed o create event" });
     }
   });
 
   //Update an existing event
-  fastify.put<{ Params: { id: string }; Body: EventUpdateTypes }>(
-    "/update/:id",
-    async (request, reply) => {
-      const { id } = request.params;
+  fastify.put<{ Body: EventBaseTypes }>("/update", async (request, reply) => {
 
-      // Validate body against partial schema
-      const parseResult = EventUpdate.safeParse(request.body);
-      if (!parseResult.success) {
-        return reply.status(400).send({ error: parseResult.error.format() });
-      }
-
-      try {
-        const updatedEvent = await prisma.event.update({
-          where: { id },
-          data: parseResult.data, // only provided fields will be updated
-        });
-
-        return reply.status(200).send(updatedEvent);
-      } catch (err: any) {
-        request.log.error(err);
-
-        // Handle "record not found" specifically
-        if (err.code === "P2025") {
-          return reply.status(404).send({ error: "Event not found" });
-        }
-
-        return reply.status(500).send({ error: "Failed to update event" });
-      }
+    const parseResult = EventBase.safeParse(request.body);
+    if (!parseResult.success) {
+      return reply.status(400).send({ error: parseResult.error.format() });
     }
-  );
+    const event: EventBaseTypes = parseResult.data;
+    const { id, ...rest }: { id: string } & EventUpdateTypes = event;
+
+    try {
+      const updatedEvent = await prisma.event.update({
+        //Okei eli tää on nyt täydessä konfliktissa Id:n antamisen kanssa
+        //Id on objektissa eikä urlissa
+        //Täytyy stripata id tulevasta objektista ja sovittaa se updateen
+        where: id, kaks ongelmaa, id ja isomman objektin tyypitys
+        data: rest, // only provided fields will be updated
+      });
+      return reply.status(200).send(updatedEvent);
+
+    } catch (err: any) {
+      console.error(err);
+      // Handle "record not found" specifically
+      if (err.code === "P2025") {
+        return reply.status(404).send({ error: "Event not found" });
+      }
+
+      return reply.status(500).send({ error: "Failed to update event" });
+    }
+  });
 
   //Get user's event lists - to be impl fully
   fastify.get("/events", async (req, reply) => {
+    console.log("/events fired");
     try {
       const now = new Date();
 
@@ -165,6 +165,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
       reply.send(result);
     } catch (err) {
+      console.error(err);
       reply.status(500).send({ error: err });
     }
   });

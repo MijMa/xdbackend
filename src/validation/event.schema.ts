@@ -46,7 +46,7 @@ export const EventCreate = EventBase.pick({
 });
 export type EventCreateTypes = z.infer<typeof EventCreate>;
 
-//We limit the update schema to just affect the event object itself
+//partial - only the provided fields will be updated, all is optional
 export const EventUpdate = EventCreate.partial();
 export type EventUpdateTypes = z.infer<typeof EventUpdate>;
 

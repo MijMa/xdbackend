@@ -31,7 +31,7 @@ export const formRoutes = async (fastify: FastifyInstance) => {
       return saved;
 
     } catch (err) {
-      fastify.log.error(err);
+      console.error(err);
       reply.status(500).send({ error: "Failed to create form" });
     }
   });
@@ -57,7 +57,7 @@ export const formRoutes = async (fastify: FastifyInstance) => {
 
       return updatedForm;
     } catch (err) {
-      fastify.log.error(err);
+      console.error(err);
       reply.status(500).send({ error: 'Failed to update form' });
     }
   });
@@ -79,7 +79,7 @@ export const formRoutes = async (fastify: FastifyInstance) => {
       }
 
     } catch (err) {
-      request.log.error(err);
+      console.error(err);
       return reply.status(500).send({ error: 'Failed to retrieve form' });
     }
   });

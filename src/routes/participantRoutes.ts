@@ -31,7 +31,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
       return reply.status(201).send(newParticipant);
     } catch (err) {
-      request.log.error(err);
+      console.error(err);
       return reply.status(500).send({ error: "Failed to add a participant" });
     }
   });
@@ -54,7 +54,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       }
  
     } catch (err) {
-      request.log.error(err);
+      console.error(err);
       return reply.status(500).send({ error: "Failed to fetch participants data" });
     }
   })
@@ -77,7 +77,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       return participants;
 
     } catch (err) {
-      request.log.error(err);
+      console.error(err);
       return reply.status(500).send({ error: 'Failed to fetch participant names' });
     }
   });

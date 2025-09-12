@@ -7,3 +7,5 @@ Dates to strings conversion from frontend all the way to database,
 need to figure this one out
 
 Tsekkaa myös jos voisit käyttää LF CRLF sijaan, vaikuttaa yleiseltä konventiolta
+
+Muista poistaa DB wipen endpoint kun projekti on valmis
