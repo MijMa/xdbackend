@@ -37,5 +37,5 @@ await fastify.listen({ port: 3000 }, (err, address) => {
     process.exit(1);
   }
   // console.log(fastify.printRoutes()); 
-  console.log("Server running on" + process.env.HOSTURL);
+  console.log("Server running on " + process.env.HOSTURL);
 });

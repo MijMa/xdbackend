@@ -47,7 +47,11 @@ export const EventCreate = EventBase.pick({
 export type EventCreateTypes = z.infer<typeof EventCreate>;
 
 //partial - only the provided fields will be updated, all is optional
-export const EventUpdate = EventCreate.partial();
+export const EventUpdate = EventBase.omit({
+  createdAt: true,
+  updatedAt: true,
+  forms: true,
+}).strip();
 export type EventUpdateTypes = z.infer<typeof EventUpdate>;
 
 export const EventResponse = EventBase.extend({ id: z.string().uuid(), createdAt: z.date() });

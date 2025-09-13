@@ -67,31 +67,32 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
   //Update an existing event
   fastify.put<{ Body: EventBaseTypes }>("/update", async (request, reply) => {
-
-    const parseResult = EventBase.safeParse(request.body);
+    console.log("Request received to /update");
+    const parseResult = EventUpdate.safeParse(request.body);
+    console.log(parseResult);
     if (!parseResult.success) {
-      return reply.status(400).send({ error: parseResult.error.format() });
+      return reply.status(400).send({ error: parseResult.error });
     }
-    const event: EventBaseTypes = parseResult.data;
-    const { id, ...rest }: { id: string } & EventUpdateTypes = event;
+    const event: EventUpdateTypes = parseResult.data;
+    console.log(event);
+    const { id, ...rest } = event;
+    console.log("ID(id): ", id);
 
     try {
+      console.log("TRY BLOCK?");
       const updatedEvent = await prisma.event.update({
-        //Okei eli tää on nyt täydessä konfliktissa Id:n antamisen kanssa
-        //Id on objektissa eikä urlissa
-        //Täytyy stripata id tulevasta objektista ja sovittaa se updateen
-        where: id, kaks ongelmaa, id ja isomman objektin tyypitys
+        where: { id },
         data: rest, // only provided fields will be updated
       });
       return reply.status(200).send(updatedEvent);
 
     } catch (err: any) {
+      console.log("ERROR?");
       console.error(err);
       // Handle "record not found" specifically
       if (err.code === "P2025") {
         return reply.status(404).send({ error: "Event not found" });
       }
-
       return reply.status(500).send({ error: "Failed to update event" });
     }
   });
