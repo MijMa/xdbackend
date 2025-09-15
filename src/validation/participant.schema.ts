@@ -22,10 +22,10 @@ export const ParticipantCreate = ParticipantBase.pick({
     name: true,
     userEmail: true,
     answers: true
-});
+}).strip();
 export type ParticipantCreateTypes = z.infer<typeof ParticipantCreate>;
 
-export const ParticipantUpdate = ParticipantCreate.partial();
+export const ParticipantUpdate = ParticipantBase.partial();
 export type ParticipantUpdateTypes = z.infer<typeof ParticipantUpdate>;
 
 export const ParticipantResponse = ParticipantBase.extend({ id: z.string().uuid(), createdAt: z.date() });

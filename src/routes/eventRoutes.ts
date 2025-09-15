@@ -23,20 +23,24 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
   fastify.post<createTypes>("/create", async (request, reply) => {
 
     //Could also just use .strip() in the zod schema, to rid exess fields
+    // I'll leave this abomination up for reflection
     const { id: eventId, createdAt, updatedAt, forms,
       ...eventPayload } = request.body.event;
-    const { id: formId, eventId: eventIdRef, participants,
+    const { id: formId, participants,
       ...formPayload } = request.body.form;
 
     const parseResult1 = EventCreate.safeParse(eventPayload);
     const parseResult2 = FormCreate.safeParse(formPayload);
     if (!parseResult1.success || !parseResult2.success) {
       return reply.status(400).send({
-         error: !parseResult1.success ? parseResult1.error : parseResult2.error, 
+         error: !parseResult1.success ? parseResult1.error.issues : parseResult2.error?.issues, 
         });
-    }
-    const event: EventCreateTypes = parseResult1.data;
-    const form: FormCreateTypes = parseResult2.data;
+    }    
+    const eventData: EventCreateTypes = parseResult1.data;
+    const formData: FormCreateTypes = parseResult2.data;
+    const { eventId: eventId2, ...form } = formData;
+    const { ...event } = eventData
+
 
     try {
       //Note that prisma also offers other commands like createMany
@@ -71,7 +75,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
     const parseResult = EventUpdate.safeParse(request.body);
     console.log(parseResult);
     if (!parseResult.success) {
-      return reply.status(400).send({ error: parseResult.error });
+      return reply.status(400).send({ errors: parseResult.error.issues });
     }
     const event: EventUpdateTypes = parseResult.data;
     console.log(event);
@@ -172,7 +176,10 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
   });
 
   //Get all events by user - to be impl fully
-  fastify.get('/users-events', async (req, reply) => {
+  fastify.get('/users-events', async (request, reply) => {
+    //Tässä kohtaa tulisi parsia sisääntulevasta requestista omistaja
+    // ja käyttää omistajaa findmany haussa
+    // Nyt hakee vaan kaikki tapahtumat tietokannasta
 
     try {
       //Prisma findMany returns all instances when 'where' is not provided

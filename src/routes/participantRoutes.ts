@@ -12,12 +12,11 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   //Adding a participant to a form, eg. signup
   fastify.post('/:id/signup', async (request, reply) => {
-    
     const parseResult = ParticipantCreate.safeParse(request.body);
     if (!parseResult.success) {
       return reply.status(400).send({ 
         error: "Invalid participant data", 
-        details: parseResult.error 
+        details: parseResult.error.issues
       });
     }
     const participantData: ParticipantTypes = parseResult.data;
@@ -47,7 +46,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
       //Checking for empty array return, findmany always returns a list
       if (!participants || participants.length === 0) {
-        return reply.status(404).send({ error: 'Participants not found' });
+        return reply.status(404).send({ error: 'Participant data not found' });
       } else {
         request.log.info(participants);
         return participants;
@@ -55,7 +54,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
  
     } catch (err) {
       console.error(err);
-      return reply.status(500).send({ error: "Failed to fetch participants data" });
+      return reply.status(500).send({ error: "Failed to fetch participant data" });
     }
   })
 

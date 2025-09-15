@@ -9,9 +9,9 @@ export const metaRoutes = async (fastify: FastifyInstance) => {
     fastify.post("/wipe-db", async (request, reply) => {
         
         try {
+            await prisma.participant.deleteMany();
             await prisma.form.deleteMany();
             await prisma.event.deleteMany();
-            await prisma.participant.deleteMany();
             // await prisma.user.deleteMany();
             return reply.status(200).send({ message: "Database wiped successfully" });
 

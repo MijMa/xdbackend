@@ -10,14 +10,15 @@ const prisma = new PrismaClient();
 
 export const formRoutes = async (fastify: FastifyInstance) => {
   
-    //Creating a form
-  fastify.post('/create', async (req, reply) => {
+  //Creating a form
+  //Huom, olettaa että eventId tulee mukana
+  fastify.post('/forms/create', async (req, reply) => {
 
     const parseResult = FormCreate.safeParse(req.body);
     if (!parseResult.success) {
       return reply.status(400).send({ 
         error: "Invalid form creation data", 
-        details: parseResult.error 
+        details: parseResult.error.issues 
       });
     }
     const formData: FormCreateTypes = parseResult.data;
@@ -36,23 +37,22 @@ export const formRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
-  //Update path
-  fastify.patch('/forms/:id', async (request, reply) => {
-    const { id } = request.params as { id: string };
+  //Update a singular form
+  fastify.put('/form/update', async (request, reply) => {
 
     const parseResult = FormUpdate.safeParse(request.body);
     if (!parseResult.success) {
       return reply.status(400).send({ 
-        error: "Invalid form update data", 
-        details: parseResult.error 
+        errors: parseResult.error.issues
       });
     }
     const formData: FormUpdateTypes = parseResult.data;
+    const { id, ...form } = formData;
 
     try {
       const updatedForm = await prisma.form.update({
         where: { id },
-        data: formData
+        data: form
       });
 
       return updatedForm;

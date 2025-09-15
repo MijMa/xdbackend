@@ -52,7 +52,7 @@ model Form {
 model Participant {
 	id String @id @default(uuid())
 	name String
-	userEmail String @unique
+	userEmail String
 	answers Json
 	formId String
 	form Form @relation(fields: [formId], references: [id])

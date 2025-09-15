@@ -18,8 +18,8 @@ fastify.decorate('prisma', prisma); //or use fastify-plugin
 
 // Registering routes
 fastify.register(eventRoutes, { prefix: '/event' });
-fastify.register(formRoutes, { prefix: '/form' });
-fastify.register(participantRoutes, { prefix: '/participant' });
+fastify.register(formRoutes);
+fastify.register(participantRoutes);
 fastify.register(metaRoutes, { prefix: '/meta' });
 (environment === "development") && await fastify.register(fastifyCors, {
   origin: true, // allowed origin(s)

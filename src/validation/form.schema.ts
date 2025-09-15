@@ -19,13 +19,18 @@ export const FormBase = z.object({
 }).strict();
 export type FormBaseTypes = z.infer<typeof FormBase>;
 
+
 export const FormCreate = FormBase.pick({
   //eventId: true,
   fields: true,
+  eventId: true,
 });
 export type FormCreateTypes = z.infer<typeof FormCreate>;
 
-export const FormUpdate = FormCreate.partial();
+export const FormUpdate = FormBase.omit({
+  participants: true,
+  eventId: true,
+}).strip();
 export type FormUpdateTypes = z.infer<typeof FormUpdate>;
 
 export const FormResponse = FormBase.extend({ id: z.string().uuid(), createdAt: z.date() });
