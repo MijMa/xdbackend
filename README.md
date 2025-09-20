@@ -9,7 +9,11 @@ than run the following for good luck
     npx prisma generate
 
 DB: initial run
-docker run -d --name postgres --network asteriski-net -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 postgres:latest
+docker run -d --name postgres --network asteriski-net -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -v ./scripts/create-supertokens-db.sql:/docker-entrypoint-initdb.d/create-supertokens-db.sql postgres:latest
+
+Supertokens initial run
+docker run -d --name supertokens --network asteriski-net -p 3567:3567 --env-file ./.env.supertokens registry.supertokens.io/supertokens/supertokens-postgresql:latest
+
 
 
 Additionally:

@@ -5,6 +5,13 @@ import { FormBase, FormBaseTypes, FormCreate, FormCreateTypes } from "../validat
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
 import { PrismaClient } from '@prisma/client';
+//The prisma namespace can be imported to make use of the type generation
+// offered by prisma (npx prisma generate)
+// HOVEVER, type validation is still needed during runtime,
+// which is not provided purely by typescript types and that's why
+// these routes are using zod parsers for validation
+//   The create input types are nice since they provide base types for models
+import { Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -12,8 +19,8 @@ const prisma = new PrismaClient();
 //Type definition for the body payload of create event(and form) route
 interface createTypes {
   Body: {
-    event: EventBaseTypes,
-    form: FormBaseTypes
+    event: Prisma.EventCreateInput,
+    form: Prisma.FormCreateInput
   }
 }
 
