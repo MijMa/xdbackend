@@ -4,31 +4,10 @@ import { PrismaClient } from '@prisma/client';
 import { eventRoutes, formRoutes, metaRoutes, participantRoutes } from "./routes/routes.js"
 import fastifyCors from '@fastify/cors';
 
-import supertokens from "supertokens-node";
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
-import Session from "supertokens-node/recipe/session";
-import EmailPassword from "supertokens-node/recipe/emailpassword";
+import { InitSupertokens } from './auth/InitSupertokens.js';
 
-
-// 1️⃣ Initialise SuperTokens
-supertokens.init({
-  framework: "fastify",
-  supertokens: {
-    connectionURI: "http://localhost:3567", // your self-hosted Core
-    apiKey: "someKey" // if Core is configured with an API key
-  },
-  appInfo: {
-    appName: "My App",
-    apiDomain: "http://localhost:3001",
-    websiteDomain: "http://localhost:3000",
-    apiBasePath: "/auth",
-    websiteBasePath: "/auth"
-  },
-  recipeList: [
-    EmailPassword.init(),
-    Session.init()
-  ]
-});
+InitSupertokens();
 
 const prisma = new PrismaClient({
   errorFormat: "minimal"

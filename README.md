@@ -1,14 +1,15 @@
 # xdbackend
 Backend project for ilmo 1.0
 
-once the project is setup, running: pnpm build && pnpm dev will be a great shortcut
+Once the project is setup, running: pnpm build && pnpm dev will be a great shortcut
+(Or pnpm build | pnpm dev in windows powershell)
 
 To run install prisma migrations
     npx prisma migrate dev --name init
 than run the following for good luck
     npx prisma generate
 
-DB: initial run
+DB: initial run (Includes supertokens DB)
 docker run -d --name postgres --network asteriski-net -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -v ./scripts/create-supertokens-db.sql:/docker-entrypoint-initdb.d/create-supertokens-db.sql postgres:latest
 
 Supertokens initial run
