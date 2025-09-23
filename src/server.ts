@@ -6,6 +6,7 @@ import fastifyCors from '@fastify/cors';
 
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
 import { InitSupertokens } from './auth/InitSupertokens.js';
+import SuperTokens from 'supertokens-node';
 
 InitSupertokens();
 
@@ -29,9 +30,13 @@ fastify.register(eventRoutes, { prefix: '/event' });
 fastify.register(formRoutes);
 fastify.register(participantRoutes);
 fastify.register(metaRoutes, { prefix: '/meta' });
-(environment === "development") && await fastify.register(fastifyCors, {
-  origin: true, // allowed origin(s)
-  methods: ['GET', 'POST', 'PUT', 'HEAD', 'PATCH', 'DELETE', 'OPTIONS']
+await fastify.register(fastifyCors, {
+  origin: process.env.ENVIRONMENT === "development"
+    ? "http://localhost:5173" // allowed origin(s)
+    : "productionURL",
+  methods: ['GET', 'POST', 'PUT', 'HEAD', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ["content-type", ...SuperTokens.getAllCORSHeaders()],
+  credentials: true, // Allow all cookies
 });
 
 fastify.get('/users', async (request, reply) => {
