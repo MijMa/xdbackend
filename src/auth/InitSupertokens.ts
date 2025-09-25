@@ -12,7 +12,7 @@ export const InitSupertokens = () => {
       appName: "xdbackend",
       apiDomain: "http://localhost:3000",
       websiteDomain: "http://localhost:5173",
-      apiBasePath: "/",
+      apiBasePath: "/auth",
       websiteBasePath: "/"
     },
     recipeList: recipes

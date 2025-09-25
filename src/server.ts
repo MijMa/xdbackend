@@ -7,6 +7,7 @@ import fastifyCors from '@fastify/cors';
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
 import { InitSupertokens } from './auth/InitSupertokens.js';
 import SuperTokens from 'supertokens-node';
+import { userRoutes } from './routes/userRoutes.js';
 
 InitSupertokens();
 
@@ -29,6 +30,7 @@ fastify.register(supertokensPlugin);
 fastify.register(eventRoutes, { prefix: '/event' });
 fastify.register(formRoutes);
 fastify.register(participantRoutes);
+fastify.register(userRoutes);
 fastify.register(metaRoutes, { prefix: '/meta' });
 await fastify.register(fastifyCors, {
   origin: process.env.ENVIRONMENT === "development"
@@ -39,10 +41,11 @@ await fastify.register(fastifyCors, {
   credentials: true, // Allow all cookies
 });
 
-fastify.get('/users', async (request, reply) => {
-  const users = await prisma.user.findMany();
-  reply.send(users)
-});
+// fastify.get('/users', async (request, reply) => {
+//   const users = await prisma.user.findMany();
+//   reply.send(users)
+// });
+
 
 await fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {
