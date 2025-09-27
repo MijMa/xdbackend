@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { ParticipantBase, ParticipantTypes, ParticipantCreate, ParticipantCreateTypes } from "../validation/participant.schema.js";
+import { ParticipantBase, ParticipantTypes, ParticipantCreate, ParticipantCreateTypes, ParticipantUpdate, ParticipantUpdateTypes } from "../validation/participant.schema.js";
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
@@ -34,6 +34,38 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       return reply.status(500).send({ error: "Failed to add a participant" });
     }
   });
+
+//Update a singular participant
+//WOULDN'T :id BE BETTER? mietitään kaikki updatet läpi
+//En löydä id:tä participantUpdate tyypistä
+//Muut edit enpointit läpsii vaan suoraan formstatee/eventstatee bäkkiin
+//MUTTA Standardi on et id:n tulis kulkee parameissa
+fastify.put('/participant/update', async (request, reply) => {
+
+  const parseResult = ParticipantUpdate.safeParse(request.body);
+  if (!parseResult.success) {
+    return reply.status(400).send({ 
+      errors: parseResult.error.issues
+    });
+  }
+  const participantData: ParticipantUpdateTypes = parseResult.data;
+  
+  //ID:n parsiminen ja SQL injektiot
+  const { id, ...participant } = participantData;
+
+  try {
+    const updatedForm = await prisma.participant.update({
+      where: { id },
+      data: participant
+    });
+
+    return updatedForm;
+  } catch (err) {
+    console.error(err);
+    reply.status(500).send({ error: 'Failed to update form' });
+  }
+});
+  
 
   //By form Id, Get full participant data of all associated participants
   fastify.get('/:id/participants', async (request, reply) => {

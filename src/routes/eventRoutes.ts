@@ -170,7 +170,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
       // Return in your desired shape
       const result = {
-        newEvents: upcomingEvents,
+        newEvents: newEvents,
         upcomingEvents: upcomingEvents,
         pastEvents: pastEvents,
       };
