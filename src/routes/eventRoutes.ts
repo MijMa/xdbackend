@@ -110,7 +110,6 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
   //Get user's event lists - to be impl fully
   fastify.get("/events", async (req, reply) => {
-    console.log("/events fired");
     try {
       const now = new Date();
 

@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { ParticipantBase, ParticipantTypes, ParticipantCreate, ParticipantCreateTypes, ParticipantUpdate, ParticipantUpdateTypes } from "../validation/participant.schema.js";
+import { ParticipantBase, ParticipantTypes, ParticipantCreate, 
+  ParticipantCreateTypes, ParticipantUpdate, ParticipantUpdateTypes, 
+  ParticipantUpdateMany, ParticipantUpdateManyTypes } from "../validation/participant.schema.js";
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
 import { PrismaClient } from '@prisma/client';
+import { paramsSchema } from "../validation/params.schema.js";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +22,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
         details: parseResult.error.issues
       });
     }
-    const participantData: ParticipantTypes = parseResult.data;
+    const participantData: ParticipantCreateTypes = parseResult.data;
 
     try {
       const newParticipant = await prisma.participant.create({
@@ -35,14 +38,48 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
-//Update a singular participant
-//WOULDN'T :id BE BETTER? mietitään kaikki updatet läpi
-//En löydä id:tä participantUpdate tyypistä
-//Muut edit enpointit läpsii vaan suoraan formstatee/eventstatee bäkkiin
-//MUTTA Standardi on et id:n tulis kulkee parameissa
+// Updating many participants at once, per provided list 
+fastify.put('/participant/updatemany', async (request, reply) => {
+
+  const parseResult = ParticipantUpdateMany.safeParse(request.body);
+  // const { id } = paramsSchema.parse(request.params);
+  console.log("RECEIVED: ", request.body); //Odd array structure
+  if (!parseResult.success) {
+    return reply.status(400).send({ 
+      error: "Invalid participant update data", 
+      details: parseResult.error.issues 
+    });
+  }
+
+  const participantData: ParticipantUpdateManyTypes = parseResult.data;
+  const participants = participantData;
+  console.log("participantdata;", participantData);
+
+  try {
+    const updates = await Promise.all(
+      participants.map((participant) => {
+        prisma.participant.update({
+          where: { id: participant.id },
+          data: participant
+        })
+      })
+    );
+    reply.send(updates);
+  } catch (err) {
+    console.error(err);
+    reply.status(500).send({ 
+      error: 'Failed to update participants',
+      err
+    });
+  }
+});
+
+//updates a participant as per provided data
+//unused
 fastify.put('/participant/update', async (request, reply) => {
 
   const parseResult = ParticipantUpdate.safeParse(request.body);
+  const { id } = paramsSchema.parse(request.params);
   if (!parseResult.success) {
     return reply.status(400).send({ 
       errors: parseResult.error.issues
@@ -50,8 +87,7 @@ fastify.put('/participant/update', async (request, reply) => {
   }
   const participantData: ParticipantUpdateTypes = parseResult.data;
   
-  //ID:n parsiminen ja SQL injektiot
-  const { id, ...participant } = participantData;
+  const participant = participantData;
 
   try {
     const updatedForm = await prisma.participant.update({
@@ -65,7 +101,7 @@ fastify.put('/participant/update', async (request, reply) => {
     reply.status(500).send({ error: 'Failed to update form' });
   }
 });
-  
+
 
   //By form Id, Get full participant data of all associated participants
   fastify.get('/:id/participants', async (request, reply) => {
