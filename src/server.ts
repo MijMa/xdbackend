@@ -32,6 +32,7 @@ fastify.register(formRoutes);
 fastify.register(participantRoutes);
 fastify.register(userRoutes);
 fastify.register(metaRoutes, { prefix: '/meta' });
+
 await fastify.register(fastifyCors, {
   origin: process.env.ENVIRONMENT === "development"
     ? "http://localhost:5173" // allowed origin(s)
