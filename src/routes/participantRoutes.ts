@@ -148,4 +148,17 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  //Get the amount of users signed up on a form, used for closing a form
+  // and displaying participant count for public users
+  fastify.get('/id/participants/count', async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    try {
+      
+    }
+    catch {
+      
+    }
+  })
+
 }

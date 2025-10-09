@@ -142,7 +142,8 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
           },
         },
         include: eventInclude,
-        orderBy: { startDate: "asc" },
+        orderBy: { createdAt: "desc" },
+        take: 5,
       });
 
       const upcomingEvents = await prisma.event.findMany({
@@ -154,6 +155,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
         },
         include: eventInclude,
         orderBy: { startDate: "asc" },
+        take: 5,
       });
 
       const pastEvents = await prisma.event.findMany({
@@ -164,7 +166,8 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
           },
         },
         include: eventInclude,
-        orderBy: { startDate: "asc" },
+        orderBy: { startDate: "desc" },
+        take: 5,
       });
 
       // Return in your desired shape
