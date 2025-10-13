@@ -21,7 +21,7 @@ export const EventBase = z.object({
   signupStarts: z.coerce.date().optional(),
   signupEnds: z.coerce.date().optional(),
   price: z.number().nonnegative().optional(),
-  metaData: z.record(z.string(), z.any()),
+  // metaData: z.record(z.string(), z.any()),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   forms: z.array(z.lazy(() => FormBase)),
@@ -42,7 +42,7 @@ export const EventCreate = EventBase.pick({
   signupStarts: true,
   signupEnds: true,
   price: true,
-  metaData: true,
+  // metaData: true,
 });
 export type EventCreateTypes = z.infer<typeof EventCreate>;
 

@@ -115,7 +115,6 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       if (!participants || participants.length === 0) {
         return reply.status(404).send({ error: 'Participant data not found' });
       } else {
-        request.log.info(participants);
         return participants;
       }
  
@@ -138,8 +137,6 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       if (!participants || participants.length === 0) {
         return reply.status(404).send({ error: 'No participants found for this form' });
       }
-
-      request.log.info(participants);
       return participants;
 
     } catch (err) {
@@ -150,14 +147,20 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   //Get the amount of users signed up on a form, used for closing a form
   // and displaying participant count for public users
-  fastify.get('/id/participants/count', async (request, reply) => {
+  fastify.get('/:id/participants/count', async (request, reply) => {
     const { id } = request.params as { id: string };
 
     try {
-      
+      const participantcount = await prisma.participant.count({
+        where: {
+          formId: id
+        }
+      })
+      return participantcount;
     }
-    catch {
-      
+    catch (err) {
+      console.error(err);
+      return reply.status(500).send({ error: 'Failed to fetch participant names' });    
     }
   })
 
