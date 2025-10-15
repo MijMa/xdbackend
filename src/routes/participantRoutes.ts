@@ -2,11 +2,13 @@ import { FastifyInstance } from "fastify";
 import { ParticipantBase, ParticipantTypes, ParticipantCreate, 
   ParticipantCreateTypes, ParticipantUpdate, ParticipantUpdateTypes, 
   ParticipantUpdateMany, ParticipantUpdateManyTypes } from "../validation/participant.schema.js";
-//Note there's a centralized pattern for using Prisma with fastify.
+//Note that there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
 import { PrismaClient } from '@prisma/client';
 import { paramsSchema } from "../validation/params.schema.js";
+import { getParticipantCount } from "./util/getParticipantCount.js";
+import { getFormsMaxParticipants } from "./util/getFormsMaxParticipants.js";
 
 const prisma = new PrismaClient();
 
@@ -23,6 +25,16 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       });
     }
     const participantData: ParticipantCreateTypes = parseResult.data;
+    const { id } = paramsSchema.parse(request.params);
+    const participantcount = getParticipantCount(id);
+    const maxParticipants = getFormsMaxParticipants(id);
+
+    //Tarvitaan toinen check, onko tapahtuma vielä auki? TODO
+
+    if (participantcount >= maxParticipants && 
+       maxParticipants != null && participantcount != null) {
+      return reply.status(400).send({ error: "Tapahtuma on täynnä" });
+    }
 
     try {
       const newParticipant = await prisma.participant.create({
@@ -147,16 +159,13 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   //Get the amount of users signed up on a form, used for closing a form
   // and displaying participant count for public users
-  fastify.get('/:id/participants/count', async (request, reply) => {
+  fastify.get('/:id/participants/count', async (request, reply): Promise<(number | null)[]> => {
     const { id } = request.params as { id: string };
 
     try {
-      const participantcount = await prisma.participant.count({
-        where: {
-          formId: id
-        }
-      })
-      return participantcount;
+      const maxparticipants = await getFormsMaxParticipants(id);
+      const currparticipantCount = await getParticipantCount(id);
+      return [currparticipantCount, maxparticipants];
     }
     catch (err) {
       console.error(err);
