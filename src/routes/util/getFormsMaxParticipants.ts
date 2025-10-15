@@ -6,8 +6,18 @@ const prisma = new PrismaClient();
 **/
 export const getFormsMaxParticipants = async (id: string): Promise<number | null> => {
   try {
-    const event = await prisma.event.findFirst({
-      where: { id },
+    const form = await prisma.form.findUnique({
+      where: { id: id },
+    });
+
+    if (!form || !form.eventId) {
+      throw new Error("Form not found or missing eventId");
+    }
+
+    const event = await prisma.event.findUnique({
+      where: { 
+        id: form.eventId
+      },
     });
 
     return event?.maxParticipants ?? null;
