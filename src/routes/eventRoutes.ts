@@ -108,6 +108,19 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
+  //Ottaa sisään tyyliin formId ja hokkus pokkus helper funktiolla takas?
+  fastify.get("/event", async (request, reply) => {
+    const id = request.params as string;
+    try {
+      prisma.event.findFirst({
+        where: {id: id}
+      });
+    } catch (error) {
+      console.error(error);
+      reply.status(500).send({ error: error });
+    }
+  });
+
   //Get user's event lists - to be impl fully
   fastify.get("/events", async (req, reply) => {
     try {

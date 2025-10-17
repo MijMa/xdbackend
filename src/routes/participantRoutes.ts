@@ -26,13 +26,13 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     }
     const participantData: ParticipantCreateTypes = parseResult.data;
     const { id } = paramsSchema.parse(request.params);
-    const participantcount = getParticipantCount(id);
-    const maxParticipants = getFormsMaxParticipants(id);
+    const participantcount = await getParticipantCount(id);
+    const maxParticipants = await getFormsMaxParticipants(id);
 
     //Tarvitaan toinen check, onko tapahtuma vielä auki? TODO
 
-    if (participantcount >= maxParticipants && 
-       maxParticipants != null && participantcount != null) {
+    if (maxParticipants != null && participantcount != null &&
+       participantcount >= maxParticipants) {
       return reply.status(400).send({ error: "Tapahtuma on täynnä" });
     }
 
