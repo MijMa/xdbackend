@@ -9,11 +9,32 @@ import { PrismaClient } from '@prisma/client';
 import { paramsSchema } from "../validation/params.schema.js";
 import { getParticipantCount } from "./util/getParticipantCount.js";
 import { getFormsMaxParticipants } from "./util/getFormsMaxParticipants.js";
+import { broadcastParticipantCount } from "./util/broadCastParticipantCount.js";
 
 const prisma = new PrismaClient();
 
 
 export const participantRoutes = async (fastify: FastifyInstance) => {
+
+  const clients = new Set();
+
+  //Subscribe a user to a participant count stream
+  fastify.get('/:id/participantcountstream', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    reply.raw.setHeader("Content-Type", "text/event-stream");
+    reply.raw.setHeader("Cache-Control", "no-cache");
+    reply.raw.setHeader("Connection", "keep-alive");
+
+    clients.add(reply.raw);
+
+    const count = getParticipantCount(id);
+    reply.raw.write(count)
+
+    request.raw.on("close", () => {
+      clients.delete(reply.raw);
+      reply.raw.end();
+    })
+  })
 
   //Adding a participant to a form, eg. signup
   fastify.post('/:id/signup', async (request, reply) => {
@@ -43,7 +64,9 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
         },
       });
 
+      broadcastParticipantCount(id, clients);
       return reply.status(201).send(newParticipant);
+
     } catch (err) {
       console.error(err);
       return reply.status(500).send({ error: "Failed to add a participant" });

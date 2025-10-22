@@ -4,7 +4,7 @@ import supertokens from "supertokens-node";
 import { FastifyInstance } from "fastify";
 import { SessionRequest } from "supertokens-node/framework/fastify";
 
-
+//supertokens needs this to show logged in user
 export const userRoutes = async (fastify: FastifyInstance) => {
   
     fastify.get("/user-info", { preHandler: verifySession() }, async (req, reply) => {

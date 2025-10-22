@@ -1,7 +1,7 @@
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { eventRoutes, formRoutes, metaRoutes, participantRoutes } from "./routes/routes.js"
+import { eventRoutes, formRoutes, participantRoutes, metaRoutes } from "./routes/routes.js"
 import fastifyCors from '@fastify/cors';
 
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
@@ -46,7 +46,6 @@ await fastify.register(fastifyCors, {
 //   const users = await prisma.user.findMany();
 //   reply.send(users)
 // });
-
 
 await fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {

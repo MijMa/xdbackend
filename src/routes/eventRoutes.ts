@@ -78,19 +78,14 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
   //Update an existing event
   fastify.put<{ Body: EventBaseTypes }>("/update", async (request, reply) => {
-    console.log("Request received to /update");
     const parseResult = EventUpdate.safeParse(request.body);
-    console.log(parseResult);
     if (!parseResult.success) {
       return reply.status(400).send({ errors: parseResult.error.issues });
     }
     const event: EventUpdateTypes = parseResult.data;
-    console.log(event);
     const { id, ...rest } = event;
-    console.log("ID(id): ", id);
 
     try {
-      console.log("TRY BLOCK?");
       const updatedEvent = await prisma.event.update({
         where: { id },
         data: rest, // only provided fields will be updated
@@ -98,7 +93,6 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
       return reply.status(200).send(updatedEvent);
 
     } catch (err: any) {
-      console.log("ERROR?");
       console.error(err);
       // Handle "record not found" specifically
       if (err.code === "P2025") {
