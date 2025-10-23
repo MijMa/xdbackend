@@ -16,25 +16,45 @@ const prisma = new PrismaClient();
 
 export const participantRoutes = async (fastify: FastifyInstance) => {
 
+  /* ↓ Participant count stream code begins */
   const clients = new Set();
 
   //Subscribe a user to a participant count stream
   fastify.get('/:id/participantcountstream', async (request, reply) => {
     const { id } = request.params as { id: string };
-    reply.raw.setHeader("Content-Type", "text/event-stream");
-    reply.raw.setHeader("Cache-Control", "no-cache");
-    reply.raw.setHeader("Connection", "keep-alive");
+
+    reply.raw.setHeader('Access-Control-Allow-Origin', process.env.ENVIRONMENT === "development"
+      ? "http://localhost:5173"
+      : "productionURL");
+    reply.raw.setHeader('Access-Control-Allow-Credentials', 'true');
+    reply.raw.setHeader('Access-Control-Allow-Headers', 'Content-Type, Cache-Control, Connection');
+    reply.raw.setHeader('Content-Type', 'text/event-stream');
+    reply.raw.setHeader('Cache-Control', 'no-cache');
+    reply.raw.setHeader('Connection', 'keep-alive');
+    reply.raw.flushHeaders();
 
     clients.add(reply.raw);
 
-    const count = getParticipantCount(id);
-    reply.raw.write(count)
+    const count = await getParticipantCount(id);
+    reply.raw.write(JSON.stringify(count))
 
     request.raw.on("close", () => {
       clients.delete(reply.raw);
       reply.raw.end();
     })
   })
+
+  fastify.options('/:id/participantcountstream', (request, reply) => {
+    reply.header('Access-Control-Allow-Origin', process.env.ENVIRONMENT === "development"
+      ? "http://localhost:5173"
+      : "productionURL");
+    reply.header('Access-Control-Allow-Credentials', 'true');
+    reply.header('Access-Control-Allow-Headers', 'Content-Type, Cache-Control, Connection');
+    reply.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    reply.send();
+  });
+
+  /* ↑ Participant count stream code ends */
 
   //Adding a participant to a form, eg. signup
   fastify.post('/:id/signup', async (request, reply) => {
@@ -52,7 +72,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
     //Tarvitaan toinen check, onko tapahtuma vielä auki? TODO
 
-    if (maxParticipants != null && participantcount != null &&
+    if (maxParticipants != null && participantcount != null && //Entä jos tyhjä //TODO
        participantcount >= maxParticipants) {
       return reply.status(400).send({ error: "Tapahtuma on täynnä" });
     }
