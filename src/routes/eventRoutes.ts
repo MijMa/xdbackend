@@ -1,5 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { EventBase, EventBaseTypes, EventCreate, EventCreateTypes, EventUpdate, EventUpdateTypes } from "../validation/event.schema.js";
+import { EventBase, EventBaseTypes, EventCreate,
+   EventCreateTypes, EventUpdate, EventUpdateTypes,
+   EventPublic, EventPublicTypes } from "../validation/event.schema.js";
 import { FormBase, FormBaseTypes, FormCreate, FormCreateTypes } from "../validation/form.schema.js";
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
@@ -12,6 +14,7 @@ import { PrismaClient } from '@prisma/client';
 // these routes are using zod parsers for validation
 //   The create input types are nice since they provide base types for models
 import { Prisma } from '@prisma/client';
+import { getEventByFormId } from "./util/getEventByFormId.js";
 
 const prisma = new PrismaClient();
 
@@ -102,20 +105,25 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
     }
   });
 
-  //Ottaa sisään tyyliin formId ja hokkus pokkus helper funktiolla takas?
-  fastify.get("/event", async (request, reply) => {
-    const id = request.params as string;
+  //Get an event by formid, strip it to just base data and give to user
+  //Used in ilmoittautuminen page for using descriptions and such
+  fastify.get("/:id", async (request, reply) => {
+    const { id } = request.params as { id: string };
     try {
-      prisma.event.findFirst({
-        where: {id: id}
-      });
+      const event = await getEventByFormId(id);
+      if (event !== null) {
+        //forms does not need to be deconstructed, since related tables are seen as undefined by default
+        const {owner, createdAt, updatedAt, ...eventRest} = event;
+        const strippedEvent: EventPublicTypes = eventRest;
+        return strippedEvent; 
+      }
     } catch (error) {
       console.error(error);
       reply.status(500).send({ error: error });
     }
   });
 
-  //Get user's event lists - to be impl fully
+  //Get user's event lists - to be impl fully, does not currently pick by user
   fastify.get("/events", async (req, reply) => {
     try {
       const now = new Date();
