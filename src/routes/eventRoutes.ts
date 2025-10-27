@@ -193,13 +193,13 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
 
   //Get all events by user - to be impl fully
   fastify.get('/users-events', async (request, reply) => {
-    //Tässä kohtaa tulisi parsia sisääntulevasta requestista omistaja
+    //Tässä kohtaa tulisi parsia sisääntulevasta requestista omistaja(owner)
     // ja käyttää omistajaa findmany haussa
     // Nyt hakee vaan kaikki tapahtumat tietokannasta
 
     try {
       //Prisma findMany returns all instances when 'where' is not provided
-      const newEvents = await prisma.event.findMany({
+      const allEvents = await prisma.event.findMany({
         //where owner = "signedinuser"
         //where: { owner: userName },
         include: {
@@ -211,7 +211,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
         },
         orderBy: { startDate: "desc" },
       });
-
+      reply.send(allEvents);
     } catch (err) {
       fastify.log.error(err);
       reply.status(500).send({ error: "Failed to fetch user's events" });
