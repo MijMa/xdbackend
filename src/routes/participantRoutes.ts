@@ -10,6 +10,7 @@ import { paramsSchema } from "../validation/params.schema.js";
 import { getParticipantCount } from "./util/getParticipantCount.js";
 import { getFormsMaxParticipants } from "./util/getFormsMaxParticipants.js";
 import { broadcastParticipantCount } from "./util/broadCastParticipantCount.js";
+import { IncomingMessage, ServerResponse } from "http";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,7 @@ const prisma = new PrismaClient();
 export const participantRoutes = async (fastify: FastifyInstance) => {
 
   /* ↓ Participant count stream code begins */
-  const clients = new Set();
+  const clients: Set<ServerResponse<IncomingMessage>> = new Set();
 
   //Subscribe a user to a participant count stream
   fastify.get('/:id/participantcountstream', async (request, reply) => {
@@ -31,7 +32,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     reply.raw.setHeader('Content-Type', 'text/event-stream');
     reply.raw.setHeader('Cache-Control', 'no-cache');
     reply.raw.setHeader('Connection', 'keep-alive');
-    reply.raw.flushHeaders();
+    //reply.raw.flushHeaders();
 
     clients.add(reply.raw);
 
@@ -72,7 +73,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
     //Tarvitaan toinen check, onko tapahtuma vielä auki? TODO
 
-    if (maxParticipants != null && participantcount != null && //Entä jos tyhjä //TODO
+    if (maxParticipants != null && participantcount != null &&
        participantcount >= maxParticipants) {
       return reply.status(400).send({ error: "Tapahtuma on täynnä" });
     }
@@ -190,7 +191,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
       });
 
       if (!participants || participants.length === 0) {
-        return reply.status(404).send({ error: 'No participants found for this form' });
+        return reply.status(204).send({ error: 'No participants found for this form' });
       }
       return participants;
 
@@ -212,7 +213,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     }
     catch (err) {
       console.error(err);
-      return reply.status(500).send({ error: 'Failed to fetch participant names' });    
+      return reply.status(500).send({ error: 'Failed to fetch participant count' });    
     }
   })
 

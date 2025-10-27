@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { nullable, z } from "zod";
 import { ParticipantBase } from "./participant.schema.js";
 import { FormBase } from "./form.schema.js";
 
@@ -55,3 +55,23 @@ export const EventUpdate = EventBase.omit({
 export type EventUpdateTypes = z.infer<typeof EventUpdate>;
 
 export const EventResponse = EventBase.extend({ id: z.string().uuid(), createdAt: z.date() });
+
+//The version of the event object that we give to user clients(non-admin)
+export const EventPublic = z.object({
+  id: z.string(),
+  name: z.string().min(1),
+  // owner: z.string().min(1),
+  description: z.string().nullable(),
+  place: z.string().nullable(),
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+  minParticipants: z.number().int().nonnegative().nullable(),
+  maxParticipants: z.number().int().nonnegative().nullable(),
+  signupStarts: z.coerce.date().nullable(),
+  signupEnds: z.coerce.date().nullable(),
+  price: z.number().nonnegative().nullable(),
+  // createdAt: z.coerce.date(),
+  // updatedAt: z.coerce.date(),
+  // forms: z.array(z.lazy(() => FormBase)),
+}).strict();
+export type EventPublicTypes = z.infer<typeof EventPublic>;
