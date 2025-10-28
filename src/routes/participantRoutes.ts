@@ -22,6 +22,11 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   //Subscribe a user to a participant count stream
   fastify.get('/:id/participantcountstream', async (request, reply) => {
+    const MAX_CONNECTIONS = process.env.VITE_MAX_STREAM_CONNECTIONS;
+    if (clients.size >= +!MAX_CONNECTIONS) {
+      reply.code(429).send('Too many connections');
+      return;
+    }
     const { id } = request.params as { id: string };
 
     reply.raw.setHeader('Access-Control-Allow-Origin', process.env.ENVIRONMENT === "development"
@@ -72,7 +77,6 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     const maxParticipants = await getFormsMaxParticipants(id);
 
     //Tarvitaan toinen check, onko tapahtuma vielä auki? TODO
-
     if (maxParticipants != null && participantcount != null &&
        participantcount >= maxParticipants) {
       return reply.status(400).send({ error: "Tapahtuma on täynnä" });

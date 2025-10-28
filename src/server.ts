@@ -8,7 +8,9 @@ import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify"
 import { InitSupertokens } from './auth/InitSupertokens.js';
 import SuperTokens from 'supertokens-node';
 import { userRoutes } from './routes/userRoutes.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 InitSupertokens();
 
 const prisma = new PrismaClient({
