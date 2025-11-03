@@ -1,4 +1,5 @@
 import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import { getUsersNewestFirst } from "supertokens-node";
 import supertokens from "supertokens-node";
 
 import { FastifyInstance } from "fastify";
@@ -21,4 +22,19 @@ export const userRoutes = async (fastify: FastifyInstance) => {
         }
         reply.send({ email: user.emails[0] });
     });
-  }
+
+    //Get all users
+    fastify.get("/api/users", async (req, res) => {
+        try {
+            const usersResponse = await getUsersNewestFirst({
+                limit: 200,
+                tenantId: "public"
+            });
+            return(usersResponse.users);
+        } catch (err) {
+            console.error(err);
+            return res.status(500).send({error: "Failed to retrieve admins"});
+        }
+    });
+
+}
