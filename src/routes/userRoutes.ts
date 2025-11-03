@@ -24,7 +24,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     });
 
     //Get all users
-    fastify.get("/api/users", async (req, res) => {
+    fastify.get("/admins", async (req, res) => {
         try {
             const usersResponse = await getUsersNewestFirst({
                 limit: 200,
