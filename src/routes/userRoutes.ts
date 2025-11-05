@@ -1,5 +1,5 @@
 import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
-import { deleteUser, getUsersNewestFirst } from "supertokens-node";
+import { deleteUser, getUsersNewestFirst, getUsersOldestFirst } from "supertokens-node";
 import supertokens from "supertokens-node";
 
 import { FastifyInstance } from "fastify";
@@ -26,7 +26,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
     //Get all users, or at least the parts of the data we wish to show
     fastify.get("/admins", async (req, res) => {
         try {
-            const usersResponse = await getUsersNewestFirst({
+            const usersResponse = await getUsersOldestFirst({
                 limit: 200,
                 tenantId: "public"
             });
@@ -39,6 +39,7 @@ export const userRoutes = async (fastify: FastifyInstance) => {
             return res.status(500).send({error: "Failed to retrieve admins"});
         }
     });
+    //Delete a admin
     fastify.delete("/delete-admin/:id", async (request, reply) => {
         const { id } = request.params as { id: string };
         try {

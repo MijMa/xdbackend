@@ -9,20 +9,30 @@ export const recipes = [
   EmailPassword.init({
     signUpFeature: {
       formFields: [
+        // {
+        //   id: "emailAddress", // still called "email" internally
+        //   validate: async (value) => {
+        //     if (typeof value !== "string") {
+        //       return "Please provide a valid username";
+        //     }
+        //     if (value.length < 3) {
+        //       return "Username must be at least 3 characters long";
+        //     }
+        //     if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+        //       return "Username can only contain letters, numbers, and underscores";
+        //     }
+        //     return undefined; //Means it's valid
+        //   }
+        // },
         {
-          id: "email", // still called "email" internally
+          id: "email",
+          optional: true,
           validate: async (value) => {
-            if (typeof value !== "string") {
-              return "Please provide a valid username";
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                return "Invalid email";
             }
-            if (value.length < 3) {
-              return "Username must be at least 3 characters long";
-            }
-            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-              return "Username can only contain letters, numbers, and underscores";
-            }
-            return undefined; //Means it's valid
-          }
+            return undefined;
+          },
         },
         {
           id: "password",
@@ -36,16 +46,6 @@ export const recipes = [
             return undefined;
           }
         },
-        {
-          id: "emailAddress",
-          optional: true,
-          validate: async (value) => {
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                return "Invalid email";
-            }
-            return undefined;
-          },
-        }
       ]
     },
     override: {
