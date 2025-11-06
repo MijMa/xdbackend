@@ -44,11 +44,6 @@ await fastify.register(fastifyCors, {
   credentials: true, // Allow all cookies
 });
 
-// fastify.get('/users', async (request, reply) => {
-//   const users = await prisma.user.findMany();
-//   reply.send(users)
-// });
-
 await fastify.listen({ port: 3000 }, (err, address) => {
   if (err) {
     fastify.log.error(err);
