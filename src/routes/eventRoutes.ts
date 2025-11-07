@@ -15,6 +15,8 @@ import { PrismaClient } from '@prisma/client';
 //   The create input types are nice since they provide base types for models
 import { Prisma } from '@prisma/client';
 import { getEventByFormId } from "./util/getEventByFormId.js";
+import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import { SessionRequest } from "supertokens-node/framework/fastify";
 
 const prisma = new PrismaClient();
 
@@ -124,7 +126,14 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
   });
 
   //Get user's event lists - to be impl fully, does not currently pick by user
-  fastify.get("/events", async (req, reply) => {
+  fastify.get("/events", { preHandler: verifySession() }, async (req, reply) => {
+    const session = (req as SessionRequest).session;
+    if (!session) { //If falsy, than no event lists given
+      reply.status(404).send({ error: "Access denied" });
+      return;
+    }
+    const userId = session.getUserId();
+    
     try {
       const now = new Date();
 
@@ -155,6 +164,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
           createdAt: {
             gte: threeMonthsAgo,
           },
+          owner: userId,
         },
         include: eventInclude,
         orderBy: { createdAt: "desc" },
@@ -167,6 +177,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
             gte: now,
             lte: threeMonthsFromNow,
           },
+          owner: userId,
         },
         include: eventInclude,
         orderBy: { startDate: "asc" },
@@ -179,6 +190,7 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
             gte: threeMonthsAgoEnd,
             lte: now,
           },
+          owner: userId,
         },
         include: eventInclude,
         orderBy: { startDate: "desc" },
@@ -200,16 +212,20 @@ export const eventRoutes = async (fastify: FastifyInstance) => {
   });
 
   //Get all events by user - to be impl fully
-  fastify.get('/users-events', async (request, reply) => {
-    //Tässä kohtaa tulisi parsia sisääntulevasta requestista omistaja(owner)
-    // ja käyttää omistajaa findmany haussa
-    // Nyt hakee vaan kaikki tapahtumat tietokannasta
+  fastify.get('/users-events', { preHandler: verifySession() }, async (request, reply) => {
+    const session = (request as SessionRequest).session;
+    if (!session) {
+      reply.status(404).send({ error: "Access denied" });
+      return;
+    }
+    const userId = session.getUserId();
 
     try {
       //Prisma findMany returns all instances when 'where' is not provided
       const allEvents = await prisma.event.findMany({
-        //where owner = "signedinuser"
-        //where: { owner: userName },
+        where: {
+          owner: userId,
+        },
         include: {
             forms: {
                 include: {

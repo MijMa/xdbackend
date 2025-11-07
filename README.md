@@ -21,7 +21,7 @@ docker run -d --name postgres --network asteriski-net -e POSTGRES_DB=postgres -e
 Supertokens initial run
 -First, create a database called 'supertokens' within your existing postgresql connection databases folder
 
--Run the following command in the project root:
+-Then run the following command in the project root:
 docker run -d --name supertokens --network asteriski-net -p 3567:3567 --env-file ./.env.supertokens registry.supertokens.io/supertokens/supertokens-postgresql:latest
 
 -Creating a user into the supertokens database:
