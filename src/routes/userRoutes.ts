@@ -8,12 +8,13 @@ import EmailPassword from "supertokens-node/recipe/emailpassword";
 
 
 type signupRequestBody = {tenantId: string, email: string, password: string}
-//supertokens needs this to show logged in user
+
 export const userRoutes = async (fastify: FastifyInstance) => {
 
     //custom route instead of recipe so we avoid breaking typescript and api and rules 
     //The purpose of this endpoint is to enable user creation without immediately signing in
     // the user that has been created.
+    //Note that there's also an override written into supertokens recipe api.signupPOST
     fastify.post("/admin/signup", { preHandler: verifySession() }, async (request, response) => {
         const session = (request as SessionRequest).session;
         if (!session) {
@@ -24,22 +25,25 @@ export const userRoutes = async (fastify: FastifyInstance) => {
         const signupBody: signupRequestBody = request.body as signupRequestBody;
         try {
             const response = await EmailPassword.signUp(signupBody.tenantId, signupBody.email, signupBody.password);
-            console.log("Never should have come here, PUNK22", response);
-            //Seuraavaks tulis lähettää supertokensin antamat errorit takas fronttiin(ja käsitellä frontissa)
-            //Esim tää: EMAIL_ALREADY_EXISTS_ERROR
             if (response.status === "OK") {
                 return {
                     status: "OK",
                     user: response.user,
-                    session: undefined, //palauttaa undefined koska ei haluta että
+                    session: undefined, //palauttaa undefined joka estää automaattikirjautumisen
                 };
             }
-
+            if (response.status === "EMAIL_ALREADY_EXISTS_ERROR") {
+                return {
+                    status: "EMAIL_ALREADY_EXISTS_ERROR",
+                };
+            }
+            return response; //fallback for other errrors
         } catch (error) {
             return error;
         }
     })
   
+    // Returns the whole email to user
     fastify.get("/user-info", { preHandler: verifySession() }, async (request, reply) => {
         const session = (request as SessionRequest).session;
         if (!session) {
