@@ -25,7 +25,7 @@ Supertokens initial run
 docker run -d --name supertokens --network asteriski-net -p 3567:3567 --env-file ./.env.supertokens registry.supertokens.io/supertokens/supertokens-postgresql:latest
 
 -Creating a user into the supertokens database:
- curl -X POST http://localhost:3000/auth/signup -H "Content-Type: application/json" -d '{"formFields":[{"id":"email","value":"admin"},{"id":"password", "value":"StrongPassword123!"}]}'
+ curl -X POST http://localhost:3000/auth/signup -H "Content-Type: application/json" -d '{"formFields":[{"id":"email","value":"admin@admin.fi"},{"id":"password", "value":"StrongPassword123!"}]}'
 
 
 

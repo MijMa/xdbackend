@@ -14,6 +14,11 @@ import { IncomingMessage, ServerResponse } from "http";
 
 const prisma = new PrismaClient();
 
+// There has to be a prefix for all this shit so we don't end up with a bunch of obscure :id references
+// but is it one prefix or many? need to ponder on it after reading trough the endpoints and understanding purpose
+//  Note that half the endpoints have been added a prefix just no but it's not streamlined
+//Participant routes and user routes share the same purpose?
+
 
 export const participantRoutes = async (fastify: FastifyInstance) => {
 
@@ -21,7 +26,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
   const clients: Set<ServerResponse<IncomingMessage>> = new Set();
 
   //Subscribe a user to a participant count stream
-  fastify.get('/:id/participantcountstream', async (request, reply) => {
+  fastify.get('/ilmoittautuminen/:id/participantcountstream', async (request, reply) => {
     const MAX_CONNECTIONS = process.env.VITE_MAX_STREAM_CONNECTIONS;
     if (clients.size >= +!MAX_CONNECTIONS) {
       reply.code(429).send('Too many connections');
@@ -50,9 +55,9 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     })
   })
 
-  fastify.options('/:id/participantcountstream', (request, reply) => {
+  fastify.options('/ilmoittautuminen/:id/participantcountstream', (request, reply) => {
     reply.header('Access-Control-Allow-Origin', process.env.ENVIRONMENT === "development"
-      ? "http://localhost:5173"
+      ? "http://localhost:5173" //TODO Portscheck - env vars and all that
       : "productionURL");
     reply.header('Access-Control-Allow-Credentials', 'true');
     reply.header('Access-Control-Allow-Headers', 'Content-Type, Cache-Control, Connection');
@@ -63,7 +68,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
   /* ↑ Participant count stream code ends */
 
   //Adding a participant to a form, eg. signup
-  fastify.post('/:id/signup', async (request, reply) => {
+  fastify.post('/ilmoittautuminen/:id/signup', async (request, reply) => {
     const parseResult = ParticipantCreate.safeParse(request.body);
     if (!parseResult.success) {
       return reply.status(400).send({ 
