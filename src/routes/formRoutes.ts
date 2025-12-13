@@ -62,7 +62,7 @@ export const formRoutes = async (fastify: FastifyInstance) => {
   });
 
   //Get a singular form, used by user event signup
-  fastify.get('/:id', async (request, reply) => {
+  fastify.get('/ilmoittautuminen/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
 
     try {

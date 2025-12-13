@@ -9,7 +9,7 @@ import EmailPassword from "supertokens-node/recipe/emailpassword";
 
 type signupRequestBody = {tenantId: string, email: string, password: string}
 
-export const userRoutes = async (fastify: FastifyInstance) => {
+export const adminRoutes = async (fastify: FastifyInstance) => {
 
     //custom route instead of recipe so we avoid breaking typescript and api and rules 
     //The purpose of this endpoint is to enable user creation without immediately signing in

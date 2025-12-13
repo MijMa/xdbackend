@@ -14,11 +14,6 @@ import { IncomingMessage, ServerResponse } from "http";
 
 const prisma = new PrismaClient();
 
-// There has to be a prefix for all this shit so we don't end up with a bunch of obscure :id references
-// but is it one prefix or many? need to ponder on it after reading trough the endpoints and understanding purpose
-//  Note that half the endpoints have been added a prefix just no but it's not streamlined
-//Participant routes and user routes share the same purpose?
-
 
 export const participantRoutes = async (fastify: FastifyInstance) => {
 
@@ -26,7 +21,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
   const clients: Set<ServerResponse<IncomingMessage>> = new Set();
 
   //Subscribe a user to a participant count stream
-  fastify.get('/ilmoittautuminen/:id/participantcountstream', async (request, reply) => {
+  fastify.get('/participantcountstream/:id', async (request, reply) => {
     const MAX_CONNECTIONS = process.env.VITE_MAX_STREAM_CONNECTIONS;
     if (clients.size >= +!MAX_CONNECTIONS) {
       reply.code(429).send('Too many connections');
@@ -55,7 +50,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
     })
   })
 
-  fastify.options('/ilmoittautuminen/:id/participantcountstream', (request, reply) => {
+  fastify.options('/participantcountstream/:id', (request, reply) => {
     reply.header('Access-Control-Allow-Origin', process.env.ENVIRONMENT === "development"
       ? "http://localhost:5173" //TODO Portscheck - env vars and all that
       : "productionURL");
@@ -67,8 +62,8 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   /* ↑ Participant count stream code ends */
 
-  //Adding a participant to a form, eg. signup
-  fastify.post('/ilmoittautuminen/:id/signup', async (request, reply) => {
+  //Creating a new participant and linking them to a form, eg. signup
+  fastify.post('/form/signup/:id', async (request, reply) => {
     const parseResult = ParticipantCreate.safeParse(request.body);
     if (!parseResult.success) {
       return reply.status(400).send({ 
@@ -104,7 +99,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
   });
 
   // Updating many participants at once, per provided list 
-  fastify.put('/participant/updatemany', async (request, reply) => {
+  fastify.put('/participants/updatemany', async (request, reply) => {
 
     const parseResult = ParticipantUpdateMany.safeParse(request.body);
     // const { id } = paramsSchema.parse(request.params);
@@ -140,35 +135,35 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   //updates a participant as per provided data
   //unused
-  fastify.put('/participant/update', async (request, reply) => {
+  // fastify.put('/participants/:id/update', async (request, reply) => {
 
-    const parseResult = ParticipantUpdate.safeParse(request.body);
-    const { id } = paramsSchema.parse(request.params);
-    if (!parseResult.success) {
-      return reply.status(400).send({ 
-        errors: parseResult.error.issues
-      });
-    }
-    const participantData: ParticipantUpdateTypes = parseResult.data;
+  //   const parseResult = ParticipantUpdate.safeParse(request.body);
+  //   const { id } = paramsSchema.parse(request.params);
+  //   if (!parseResult.success) {
+  //     return reply.status(400).send({ 
+  //       errors: parseResult.error.issues
+  //     });
+  //   }
+  //   const participantData: ParticipantUpdateTypes = parseResult.data;
     
-    const participant = participantData;
+  //   const participant = participantData;
 
-    try {
-      const updatedForm = await prisma.participant.update({
-        where: { id },
-        data: participant
-      });
+  //   try {
+  //     const updatedForm = await prisma.participant.update({
+  //       where: { id },
+  //       data: participant
+  //     });
 
-      return updatedForm;
-    } catch (err) {
-      console.error(err);
-      reply.status(500).send({ error: 'Failed to update form' });
-    }
-  });
+  //     return updatedForm;
+  //   } catch (err) {
+  //     console.error(err);
+  //     reply.status(500).send({ error: 'Failed to update form' });
+  //   }
+  // });
 
 
   //By form Id, Get full participant data of all associated participants
-  fastify.get('/:id/participants', async (request, reply) => {
+  fastify.get('/form/:id/participants/data', async (request, reply) => {
     const { id } = request.params as { id: string };
 
     try {
@@ -190,7 +185,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
   })
 
   //Get participant names that have signed up to a specific form
-  fastify.get('/:id/participants/names', async (request, reply) => {
+  fastify.get('/form/:id/participants/names', async (request, reply) => {
     const { id } = request.params as { id: string };
 
     try {
@@ -212,7 +207,7 @@ export const participantRoutes = async (fastify: FastifyInstance) => {
 
   //Get the amount of users signed up on a form, used for closing a form
   // and displaying participant count for public users
-  fastify.get('/:id/participants/count', async (request, reply): Promise<(number | null)[]> => {
+  fastify.get('/form/:id/participants/count', async (request, reply): Promise<(number | null)[]> => {
     const { id } = request.params as { id: string };
 
     try {

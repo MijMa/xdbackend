@@ -7,7 +7,7 @@ import fastifyCors from '@fastify/cors';
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
 import { InitSupertokens } from './auth/InitSupertokens.js';
 import SuperTokens from 'supertokens-node';
-import { userRoutes } from './routes/userRoutes.js';
+import { adminRoutes } from './routes/adminRoutes.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -32,7 +32,7 @@ fastify.register(supertokensPlugin);
 fastify.register(eventRoutes, { prefix: '/event' });
 fastify.register(formRoutes);
 fastify.register(participantRoutes);
-fastify.register(userRoutes);
+fastify.register(adminRoutes);
 fastify.register(metaRoutes, { prefix: '/meta' });
 
 await fastify.register(fastifyCors, {
