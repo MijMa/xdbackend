@@ -1,7 +1,7 @@
 
 import Fastify, { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { eventRoutes, formRoutes, participantRoutes, metaRoutes } from "./routes/routes.js"
+import { eventCrudRoutes, formCrudRoutes, participantCrudRoutes, metaRoutes } from "./routes/routeBarrel.js"
 import fastifyCors from '@fastify/cors';
 
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
@@ -29,9 +29,9 @@ fastify.decorate('prisma', prisma); //or use fastify-plugin
 fastify.register(supertokensPlugin);
 
 // Registering routes
-fastify.register(eventRoutes, { prefix: '/event' });
-fastify.register(formRoutes);
-fastify.register(participantRoutes);
+fastify.register(eventCrudRoutes, { prefix: '/event' });
+fastify.register(formCrudRoutes);
+fastify.register(participantCrudRoutes);
 fastify.register(adminRoutes);
 fastify.register(metaRoutes, { prefix: '/meta' });
 

@@ -1,21 +1,21 @@
 import { FastifyInstance } from "fastify";
 import { ParticipantBase, ParticipantTypes, ParticipantCreate, 
   ParticipantCreateTypes, ParticipantUpdate, ParticipantUpdateTypes, 
-  ParticipantUpdateMany, ParticipantUpdateManyTypes } from "../validation/participant.schema.js";
+  ParticipantUpdateMany, ParticipantUpdateManyTypes } from "../../validation/participant.schema.js";
 //Note that there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
 import { PrismaClient } from '@prisma/client';
-import { paramsSchema } from "../validation/params.schema.js";
-import { getParticipantCount } from "./util/getParticipantCount.js";
-import { getFormsMaxParticipants } from "./util/getFormsMaxParticipants.js";
-import { broadcastParticipantCount } from "./util/broadCastParticipantCount.js";
+import { paramsSchema } from "../../validation/params.schema.js";
+import { getParticipantCount } from "../../util/getParticipantCount.js";
+import { getFormsMaxParticipants } from "../../util/getFormsMaxParticipants.js";
+import { broadcastParticipantCount } from "../../util/broadCastParticipantCount.js";
 import { IncomingMessage, ServerResponse } from "http";
 
 const prisma = new PrismaClient();
 
 
-export const participantRoutes = async (fastify: FastifyInstance) => {
+export const participantCrudRoutes = async (fastify: FastifyInstance) => {
 
   /* ↓ Participant count stream code begins */
   const clients: Set<ServerResponse<IncomingMessage>> = new Set();

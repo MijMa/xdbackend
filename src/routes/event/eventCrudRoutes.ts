@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
 import { EventBase, EventBaseTypes, EventCreate,
    EventCreateTypes, EventUpdate, EventUpdateTypes,
-   EventPublic, EventPublicTypes } from "../validation/event.schema.js";
-import { FormBase, FormBaseTypes, FormCreate, FormCreateTypes } from "../validation/form.schema.js";
+   EventPublic, EventPublicTypes } from "../../validation/event.schema.js";
+import { FormBase, FormBaseTypes, FormCreate, FormCreateTypes } from "../../validation/form.schema.js";
 //Note there's a centralized pattern for using Prisma with fastify.
 // This pattern makes it so that the prisma instance is only created once
 //  and can be accessed from multiple locations that might need it
@@ -14,7 +14,7 @@ import { PrismaClient } from '@prisma/client';
 // these routes are using zod parsers for validation
 //   The create input types are nice since they provide base types for models
 import { Prisma } from '@prisma/client';
-import { getEventByFormId } from "./util/getEventByFormId.js";
+import { getEventByFormId } from "../../util/getEventByFormId.js";
 import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
 import { SessionRequest } from "supertokens-node/framework/fastify";
 
@@ -29,7 +29,7 @@ interface createTypes {
   }
 }
 
-export const eventRoutes = async (fastify: FastifyInstance) => {
+export const eventCrudRoutes = async (fastify: FastifyInstance) => {
 
   //Creates a event
   fastify.post<createTypes>("/create", async (request, reply) => {
