@@ -62,7 +62,7 @@ export const formCrudRoutes = async (fastify: FastifyInstance) => {
   });
 
   //Get a singular form, used by user event signup
-  fastify.get('/ilmoittautuminen/:id', async (request, reply) => {
+  fastify.get('/ilmoittautuminen/form/:id', async (request, reply) => {
     const { id } = request.params as { id: string };
 
     try {
@@ -82,5 +82,28 @@ export const formCrudRoutes = async (fastify: FastifyInstance) => {
       return reply.status(500).send({ error: 'Failed to retrieve form' });
     }
   });
+
+  //By form Id, Get full participant data of all associated participants
+  fastify.get('/form/:id/participants/data', async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    try {
+      const participants = await prisma.participant.findMany({
+        where: { formId: id },
+      });
+
+      //Checking for empty array return, findmany always returns a list
+      if (!participants || participants.length === 0) {
+        return reply.status(404).send({ error: 'Participant data not found' });
+      } else {
+        return participants;
+      }
+ 
+    } catch (err) {
+      console.error(err);
+      return reply.status(500).send({ error: "Failed to fetch participant data" });
+    }
+  })
+
 
 }
