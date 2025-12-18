@@ -5,6 +5,7 @@ import { getParticipantCount } from "../../util/getParticipantCount.js";
 import { getFormsMaxParticipants } from "../../util/getFormsMaxParticipants.js";
 import { broadcastParticipantCount } from "../../util/broadCastParticipantCount.js";
 
+import { streamClients } from "../routeBarrel.js";
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
@@ -38,7 +39,7 @@ export const ilmoittautuminenRoutes = async (fastify: FastifyInstance) => {
         },
       });
 
-      broadcastParticipantCount(id, clients);
+      broadcastParticipantCount(id, streamClients);
       return reply.status(201).send(newParticipant);
 
     } catch (err) {

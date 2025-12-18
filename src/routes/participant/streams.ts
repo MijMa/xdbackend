@@ -5,15 +5,13 @@ import { IncomingMessage, ServerResponse } from "http";
 
 const prisma = new PrismaClient();
 
-
-export const participantStreamRoutes = async (fastify: FastifyInstance) => {
-
-  const clients: Set<ServerResponse<IncomingMessage>> = new Set();
+export const streamClients: Set<ServerResponse<IncomingMessage>> = new Set();
+export const participantStreamRoutes = async (fastify: FastifyInstance) => {  
 
   //Subscribe a user to a participant count stream
   fastify.get('/participantcountstream/:id', async (request, reply) => {
     const MAX_CONNECTIONS = process.env.VITE_MAX_STREAM_CONNECTIONS;
-    if (clients.size >= +!MAX_CONNECTIONS) {
+    if (streamClients.size >= +!MAX_CONNECTIONS) {
       reply.code(429).send('Too many connections');
       return;
     }
@@ -29,13 +27,13 @@ export const participantStreamRoutes = async (fastify: FastifyInstance) => {
     reply.raw.setHeader('Connection', 'keep-alive');
     //reply.raw.flushHeaders();
 
-    clients.add(reply.raw);
+    streamClients.add(reply.raw);
 
     const count = await getParticipantCount(id);
     reply.raw.write(JSON.stringify(count))
 
     request.raw.on("close", () => {
-      clients.delete(reply.raw);
+      streamClients.delete(reply.raw);
       reply.raw.end();
     })
   })
