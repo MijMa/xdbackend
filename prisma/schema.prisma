@@ -30,7 +30,7 @@ model Event {
 	maxParticipants Int?
 	signupStarts DateTime?
 	signupEnds DateTime?
-	price Int?
+	price Decimal? @db.Decimal(10, 2)
 	metaData Json?
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt

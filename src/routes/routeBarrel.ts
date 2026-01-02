@@ -5,4 +5,5 @@ export * from "./form/formCrudRoutes.js";
 export * from "./participant/participantCrudRoutes.js";
 
 export * from "./test&dataRoutes.js";
+export * from "./form/ilmoittautuminen.js"
 export * from "./participant/streams.js";
