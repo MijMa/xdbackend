@@ -11,18 +11,18 @@ than run the following for good luck
 
 1.
 Creating a network, run:
-docker network create -d bridge asteriski-net
+docker network create -d bridge miion-asteriski-net
 
 2.
 DB: initial run (Includes supertokens DB)
-docker run -d --name postgres --network asteriski-net -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -v ./scripts/create-supertokens-db.sql:/docker-entrypoint-initdb.d/create-supertokens-db.sql postgres:latest
+docker run -d --name miionpostgres --network miion-asteriski-net -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -v /home/mijma/workspace/xdbackend/scripts/create-supertokens-db.sql:/docker-entrypoint-initdb.d/create-supertokens-db.sql postgres:latest
 
 3.
 Supertokens initial run
 -First, create a database called 'supertokens' within your existing postgresql connection databases folder
 
 -Then run the following command in the project root:
-docker run -d --name supertokens --network asteriski-net -p 3567:3567 --env-file ./.env.supertokens registry.supertokens.io/supertokens/supertokens-postgresql:latest
+docker run -d --name supertokens --network miion-asteriski-net -p 3567:3567 --env-file /home/mijma/workspace/xdbackend/.env.supertokens registry.supertokens.io/supertokens/supertokens-postgresql:latest
 
 -Creating a user into the supertokens database:
  curl -X POST http://localhost:3000/auth/signup -H "Content-Type: application/json" -d '{"formFields":[{"id":"email","value":"admin@admin.fi"},{"id":"password", "value":"StrongPassword123!"}]}'
