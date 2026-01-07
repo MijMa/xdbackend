@@ -1,5 +1,4 @@
 import { nullable, z } from "zod";
-import { ParticipantBase } from "./participant.schema.js";
 import { FormBase } from "./form.schema.js";
 
 export const EventBase = z.object({

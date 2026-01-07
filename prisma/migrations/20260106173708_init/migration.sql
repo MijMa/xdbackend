@@ -1,46 +1,55 @@
 -- CreateTable
-CREATE TABLE "public"."events" (
+CREATE TABLE "public"."user" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+
+    CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "public"."events" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "owner" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "place" TEXT NOT NULL,
-    "startDate" TEXT NOT NULL,
-    "endDate" TEXT NOT NULL,
-    "minParticipants" INTEGER NOT NULL,
-    "maxParticipants" INTEGER NOT NULL,
-    "signupStarts" TEXT NOT NULL,
-    "signupEnds" TEXT NOT NULL,
-    "price" INTEGER NOT NULL,
-    "metadata" TEXT NOT NULL,
+    "description" TEXT,
+    "place" TEXT,
+    "minParticipants" INTEGER,
+    "maxParticipants" INTEGER,
+    "price" DECIMAL(10,2),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "metaData" JSONB,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "signupStarts" TIMESTAMP(3),
+    "signupEnds" TIMESTAMP(3),
 
     CONSTRAINT "events_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "public"."forms" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "fields" JSONB NOT NULL,
-    "eventId" INTEGER NOT NULL,
+    "eventId" TEXT NOT NULL,
 
     CONSTRAINT "forms_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "public"."participants" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "answers" JSONB NOT NULL,
-    "formId" INTEGER NOT NULL,
+    "formId" TEXT NOT NULL,
+    "userEmail" TEXT NOT NULL,
 
     CONSTRAINT "participants_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "participants_email_key" ON "public"."participants"("email");
+CREATE UNIQUE INDEX "user_email_key" ON "public"."user"("email");
 
 -- AddForeignKey
 ALTER TABLE "public"."forms" ADD CONSTRAINT "forms_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "public"."events"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

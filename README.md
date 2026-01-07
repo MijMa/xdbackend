@@ -4,9 +4,9 @@ Backend project for ilmo 1.0
 Once the project is setup, running: pnpm build && pnpm dev will be a great shortcut
 (Or pnpm build | pnpm dev in windows powershell)
 
-To run install prisma migrations
+To create and update existing prisma migrations - needs to be connected to db
     npx prisma migrate dev --name init
-than run the following for good luck
+than run the following for ts types based on prisma schema
     npx prisma generate
 
 1.
