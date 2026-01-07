@@ -9,7 +9,7 @@ export const InitSupertokens = () => {
       apiKey: undefined // if Core is configured with an API key provide value
     },
     appInfo: {
-      appName: "xdbackend",
+      appName: "riski-ilmo-backend",
       apiDomain: "http://localhost:3000",
       websiteDomain: "http://localhost:5173",
       apiBasePath: "/auth",

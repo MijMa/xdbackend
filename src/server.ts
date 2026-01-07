@@ -50,7 +50,7 @@ await fastify.register(fastifyCors, {
   credentials: true, // Allow all cookies
 });
 
-await fastify.listen({ port: 3000 }, (err, address) => {
+await fastify.listen({ port: 3000 , host: "0.0.0.0"}, (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);

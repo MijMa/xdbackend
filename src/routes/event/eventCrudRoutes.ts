@@ -115,8 +115,8 @@ export const eventCrudRoutes = async (fastify: FastifyInstance) => {
       const event = await getEventByFormId(id);
       if (event !== null) {
         //forms does not need to be deconstructed, since related tables are seen as undefined by default
-        const {owner, createdAt, updatedAt, ...eventRest} = event;
-        const strippedEvent: EventPublicTypes = eventRest;
+        const {owner, createdAt, updatedAt, price, ...eventRest} = event;
+        const strippedEvent: EventPublicTypes = {price: price ? price.toNumber() : null, ...eventRest};
         return strippedEvent; 
       }
     } catch (error) {

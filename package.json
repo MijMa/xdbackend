@@ -11,9 +11,9 @@
 	"scripts": {
 		"dev": "node dist/server.js",
 		"build": "tsc",
-		"start": ""
+		"start": "node dist/server.js"
 	},
-	"name": "xdbackend",
+	"name": "riski-ilmo-backend",
 	"version": "1.0.0",
 	"description": "Backend project for ilmo 1.0",
 	"main": "src/app.js",
@@ -24,13 +24,13 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/MijMa/xdbackend.git"
+		"url": "git+https://github.com/MijMa/riski-ilmo-backend.git"
 	},
 	"keywords": [],
 	"author": "Mio Mattila",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/MijMa/xdbackend/issues"
+		"url": "https://github.com/MijMa/riski-ilmo-backend/issues"
 	},
-	"homepage": "https://github.com/MijMa/xdbackend#readme"
+	"homepage": "https://github.com/MijMa/riski-ilmo-backend#readme"
 }

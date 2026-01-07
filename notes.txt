@@ -1,8 +1,0 @@
-Jos haluat sujuvampaa devaamista muutoksien yhteydessä,
-voit asentaa ts-node ja nodemon. ts-node kääntää ja runaa yhdellä kertaa
-ja nodemon restarttaa koko serverin stateineen päivineen mikäli koodi muuttuu
-
-
-Tsekkaa myös jos voisit käyttää LF CRLF sijaan, vaikuttaa yleiseltä konventiolta
-
-Muista poistaa DB wipen endpoint kun projekti on valmis

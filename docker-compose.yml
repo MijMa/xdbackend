@@ -1,9 +1,9 @@
 
+# This thing should be responsible for setting up supertokens and its database
+# psql -U postgres -c "CREATE DATABASE supertokens;"
 
 
 # Esimerkki docker compose filusta jossa Supertokens:
-
-
 
 version: '3'
 
