@@ -52,7 +52,7 @@ export const eventCrudRoutes = async (fastify: FastifyInstance) => {
     const formData: FormCreateTypes = parseResult2.data;
     const { eventId: eventId2, ...form } = formData;
     const { ...event } = eventData
-
+    
 
     try {
       //Note that prisma also offers other commands like createMany

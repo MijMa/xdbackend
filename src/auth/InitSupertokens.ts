@@ -2,10 +2,12 @@ import supertokens from "supertokens-node";
 import { recipes } from "./recipes.js";
 
 export const InitSupertokens = () => {
+  const coreURI = process.env.SUPERTOKENS_CORE_URI ?? "http://localhost:3567";
+  
   supertokens.init({
     framework: "fastify",
     supertokens: {
-      connectionURI: "http://localhost:3567", // your self-hosted Core
+      connectionURI: coreURI, // your self-hosted Core
       apiKey: undefined // if Core is configured with an API key provide value
     },
     appInfo: {

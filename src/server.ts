@@ -56,5 +56,5 @@ await fastify.listen({ port: 3000 , host: "0.0.0.0"}, (err, address) => {
     process.exit(1);
   }
   // console.log(fastify.printRoutes()); 
-  console.log("Server running on " + process.env.HOSTURL);
+  console.log("Server running on " + process.env.SUPERTOKENS_CORE_URI);
 });
