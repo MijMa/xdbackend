@@ -26,7 +26,7 @@ export const recipes = [
         // },
         {
           id: "email",
-          optional: true,
+          // optional: undefined,
           validate: async (value) => {
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                 return "Invalid email";

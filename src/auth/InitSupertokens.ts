@@ -1,14 +1,14 @@
-import supertokens from "supertokens-node";
+import SuperTokens from "supertokens-node";
 import { recipes } from "./recipes.js";
 
 export const InitSupertokens = () => {
   const coreURI = process.env.SUPERTOKENS_CORE_URI ?? "http://localhost:3567";
   
-  supertokens.init({
+  SuperTokens.init({
     framework: "fastify",
     supertokens: {
       connectionURI: coreURI, // your self-hosted Core
-      apiKey: undefined // if Core is configured with an API key provide value
+      //apiKey: undefined // if Core is configured with an API key provide value
     },
     appInfo: {
       appName: "riski-ilmo-backend",

@@ -6,7 +6,7 @@ import { eventCrudRoutes, formCrudRoutes, participantCrudRoutes, metaRoutes,
 } from "./routes/routeBarrel.js"
 import fastifyCors from '@fastify/cors';
 
-import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
+import supertokensFastify from "supertokens-node/framework/fastify";
 import { InitSupertokens } from './auth/InitSupertokens.js';
 import SuperTokens from 'supertokens-node';
 import { adminRoutes } from './routes/adminRoutes.js';
@@ -28,18 +28,18 @@ const environment = process.env.ENVIRONMENT;
 fastify.decorate('prisma', prisma); //or use fastify-plugin
 
 // Registering supertokens
-fastify.register(supertokensPlugin);
+await fastify.register(supertokensFastify.plugin);
 
 // Registering routes
-fastify.register(eventCrudRoutes, { prefix: '/event' });
-fastify.register(formCrudRoutes);
-fastify.register(participantCrudRoutes);
+await fastify.register(eventCrudRoutes, { prefix: '/event' });
+await fastify.register(formCrudRoutes);
+await fastify.register(participantCrudRoutes);
 
-fastify.register(ilmoittautuminenRoutes)
-fastify.register(participantStreamRoutes)
+await fastify.register(ilmoittautuminenRoutes)
+await fastify.register(participantStreamRoutes)
 
-fastify.register(adminRoutes);
-fastify.register(metaRoutes, { prefix: '/meta' });
+await fastify.register(adminRoutes);
+await fastify.register(metaRoutes, { prefix: '/meta' });
 
 await fastify.register(fastifyCors, {
   origin: process.env.ENVIRONMENT === "development"
@@ -55,6 +55,6 @@ await fastify.listen({ port: 3000 , host: "0.0.0.0"}, (err, address) => {
     fastify.log.error(err);
     process.exit(1);
   }
-  // console.log(fastify.printRoutes()); 
-  console.log("Server running on " + process.env.SUPERTOKENS_CORE_URI);
+  console.log(fastify.printRoutes()); 
+  console.log("Server running on XD" + process.env.HOSTURL);
 });
