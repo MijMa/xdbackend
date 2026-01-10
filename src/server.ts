@@ -50,11 +50,30 @@ await fastify.register(fastifyCors, {
   credentials: true, // Allow all cookies
 });
 
+//todo delete if not working
+import EmailPassword from "supertokens-node/recipe/emailpassword";
+import supertokens from "supertokens-node";
+
+
 await fastify.listen({ port: 3000 , host: "0.0.0.0"}, (err, address) => {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
   }
   console.log(fastify.printRoutes()); 
-  console.log("Server running on XD" + process.env.HOSTURL);
+  console.log("Server running on" + process.env.HOSTURL);
+
+  async function ensureAdminUser() {
+    const email = process.env.ADMIN_EMAIL!;
+    const password = process.env.ADMIN_PASSWORD!;
+
+    const users = await supertokens.listUsersByAccountInfo("public", { email: email, });
+     if (users.length > 0) {
+      console.log("Admin user already exists:", users[0].id);
+      return;
+    }
+    const result = await EmailPassword.signUp("public", email, password);
+    console.log("Admin user creation answer:", result);
+  }
+  ensureAdminUser();
 });

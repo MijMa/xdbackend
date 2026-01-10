@@ -18,7 +18,7 @@ docker network create -d bridge miion-asteriski-net
 
 2. DB: initial run on project root (Includes supertokens DB creation)
 
-docker run -d --name miionpostgres --network miion-asteriski-net -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=1234 -p 5432:5432 -v .\scripts\create-supertokens-db.sql:/docker-entrypoint-initdb.d/create-supertokens-db.sql postgres:latest
+docker run -d --name miionpostgres --network miion-asteriski-net --env-file .env.postgres -p 5432:5432 -v .\scripts\create-supertokens-db.sql:/docker-entrypoint-initdb.d/create-supertokens-db.sql postgres:latest
 
 3. Supertokens initial run: Run the following command in the project root
 
@@ -33,17 +33,7 @@ npx prisma generate
 5. run the following commands in project root:
 pnpm build | pnpm dev
 
--Creating a user into the supertokens database:
- curl -X POST http://localhost:3000/auth/signup -H "Content-Type: application/json" -d '{"formFields":[{"id":"email","value":"admin@admin.fi"},{"id":"password", "value":"StrongPassword123!"}]}'
-
-LEFT HERE, NEED TO CHECK Supertokens' database connection
- curl -i -X POST http://localhost:3567/recipe/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@admin.fi",
-    "password": "StrongPassword123!"
-  }'
-
+After this, the system should be ready to accept requests from the frontend
 
 Rememba' to also install types:
 npm i --save-dev @types/node
